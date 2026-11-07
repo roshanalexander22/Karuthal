@@ -117,7 +117,7 @@ async def extract_document_ocr(
     return result
 
 # Document Extraction
-@app.post("/extraction/extract", response_model=ExtractionResponse)
+@app.post("/extraction/extract")
 async def extract_document_entities(payload: ExtractionRequest):
     result = await DocumentExtractionService.extract_structured_entities(
         raw_ocr_text=payload.raw_ocr_text,
