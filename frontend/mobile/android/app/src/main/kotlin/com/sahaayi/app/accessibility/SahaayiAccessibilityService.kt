@@ -127,6 +127,40 @@ class SahaayiAccessibilityService : AccessibilityService() {
         }
     }
 
+    fun injectFieldValue(nodeId: String, text: String): Boolean {
+        val rootNode = rootInActiveWindow ?: return false
+        return try {
+            findAndSetText(rootNode, nodeId, text)
+        } finally {
+            rootNode.recycle()
+        }
+    }
+
+    private fun findAndSetText(node: AccessibilityNodeInfo, targetNodeId: String, text: String): Boolean {
+        val currentNodeId = node.viewIdResourceName ?: node.hashCode().toString()
+        if (currentNodeId == targetNodeId && (node.isEditable || node.className == "android.widget.EditText")) {
+            val label = resolveFieldLabel(node)
+            val hint = node.hintText?.toString() ?: ""
+            val combinedText = "$label $hint".lowercase()
+            if (FORBIDDEN_INPUT_TYPES.any { combinedText.contains(it) }) {
+                Log.w(TAG, "Refusing to inject value into sensitive field: $currentNodeId")
+                return false
+            }
+            val arguments = android.os.Bundle().apply {
+                putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+            }
+            return node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+        }
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            val found = findAndSetText(child, targetNodeId, text)
+            child.recycle()
+            if (found) return true
+        }
+        return false
+    }
+
     fun extractFormFields(rootNode: AccessibilityNodeInfo): List<FormField> {
         val fields = mutableListOf<FormField>()
         traverseNode(rootNode, fields)
