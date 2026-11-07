@@ -57,6 +57,7 @@ class Settings(BaseSettings):
     DB_USER: str = "sahaayi_user"
     DB_PASSWORD: str = "changeme"
     DATABASE_URL_OVERRIDE: Optional[str] = None
+    DATABASE_URL_CONFIG: Optional[str] = None
 
     @computed_field  # type: ignore[misc]
     @property
@@ -64,6 +65,8 @@ class Settings(BaseSettings):
         """Async database URL for SQLAlchemy."""
         if self.DATABASE_URL_OVERRIDE:
             return self.DATABASE_URL_OVERRIDE
+        if self.DATABASE_URL_CONFIG:
+            return self.DATABASE_URL_CONFIG
         return (
             f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"

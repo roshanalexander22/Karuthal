@@ -57,18 +57,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     logger.info("Sahaayi API starting up …")
     logger.info("Environment: %s", settings.APP_ENV)
 
-    # Verify DB connectivity and create tables in dev mode if needed
-    try:
-        from app.config.database import Base
-        import app.models  # noqa: F401
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        logger.info("Database connection and schema verified.")
-    except Exception as exc:
-        if settings.APP_ENV == "development":
-            logger.warning("Database connection failed (running in dev mode without active DB): %s", exc)
-        else:
-            raise exc
+    # Verify DB connectivity, auto-fallback to SQLite if Postgres unreachable, and seed dev data
+    from app.config.database import ensure_database_connected
+    await ensure_database_connected()
 
     logger.info("Sahaayi API is ready.")
 
@@ -76,6 +67,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
 
     # ---- Shutdown ----
     logger.info("Sahaayi API shutting down …")
+    from app.config.database import engine
     await engine.dispose()
     logger.info("Database engine disposed. Goodbye.")
 

@@ -3,10 +3,11 @@ Write-Host "==========================================================" -Foregro
 Write-Host "🚀 SAHAAYI: Starting Development Services" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-$env:DATABASE_URL_OVERRIDE = "sqlite+aiosqlite:///backend/sahaayi_dev.db"
+$canonicalDb = "$PSScriptRoot\..\backend\sahaayi_dev.db" -replace '\\', '/'
+$env:DATABASE_URL_OVERRIDE = "sqlite+aiosqlite:///$canonicalDb"
 
 Write-Host "Starting Backend API on http://127.0.0.1:8000 ..." -ForegroundColor Green
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd backend; `$env:DATABASE_URL_OVERRIDE='sqlite+aiosqlite:///sahaayi_dev.db'; uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd backend; `$canonicalDb = (Resolve-Path 'sahaayi_dev.db').Path -replace '\\', '/'; `$env:DATABASE_URL_OVERRIDE = `"sqlite+aiosqlite:///`$canonicalDb`"; uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
 
 Write-Host "Starting AI Engine on http://127.0.0.1:8001 ..." -ForegroundColor Green
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd ai-engine; uvicorn main:app --host 127.0.0.1 --port 8001 --reload"
