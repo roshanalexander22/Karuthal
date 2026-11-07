@@ -169,7 +169,7 @@ def create_app() -> FastAPI:
     ) -> JSONResponse:
         """Handle Pydantic v2 validation errors raised outside of FastAPI request parsing."""
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_ENTITY", 422),
             content={"detail": exc.errors()},
         )
 
