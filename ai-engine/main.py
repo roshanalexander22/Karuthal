@@ -1,6 +1,10 @@
-from fastapi import FastAPI
+from __future__ import annotations
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
+
+from ocr.ocr_service import OCRService
 
 app = FastAPI(
     title="Sahaayi AI Engine",
@@ -28,3 +32,17 @@ async def health_check():
             "llm": "Google Gemini"
         }
     }
+
+@app.post("/ocr/extract")
+async def extract_document_ocr(
+    file: UploadFile = File(...),
+    language: Optional[str] = Form("mal+eng")
+):
+    """Extract Malayalam & English text from image or PDF document."""
+    file_bytes = await file.read()
+    result = OCRService.process_document(
+        file_bytes=file_bytes,
+        filename=file.filename or "upload.bin",
+        lang=language or "mal+eng"
+    )
+    return result
