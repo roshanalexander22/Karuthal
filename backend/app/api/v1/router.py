@@ -20,16 +20,21 @@ from app.modules.personal_memory.router import router as profile_router
 from app.modules.reminders.router import router as reminders_router
 from app.modules.smart_autofill.router import router as autofill_router
 from app.modules.transcription.router import router as transcription_router
+from app.modules.voice.router import router as voice_router, tts_router
 
 # Root router for v1 — all routes here are mounted under /api/v1 by main.py
 api_router = APIRouter()
 
-api_router.include_router(auth_router,          prefix="/auth",           tags=["Authentication"])
-api_router.include_router(documents_router,     prefix="/documents",      tags=["Documents"])
-api_router.include_router(profile_router,       prefix="/profile",        tags=["Personal Memory"])
-api_router.include_router(autofill_router,      prefix="/autofill",       tags=["Smart Autofill"])
-api_router.include_router(reminders_router,     prefix="/reminders",      tags=["Reminders"])
-api_router.include_router(transcription_router, prefix="/transcription",  tags=["Transcription"])
-api_router.include_router(fall_detection_router,prefix="/fall-detection", tags=["Fall Detection"])
-api_router.include_router(emergency_router,     prefix="/emergency",      tags=["Emergency"])
-api_router.include_router(caregiver_router,     prefix="/caregiver",      tags=["Caregiver"])
+api_router.include_router(auth_router,           prefix="/auth",           tags=["Authentication"])
+api_router.include_router(documents_router,      prefix="/documents",      tags=["Documents"])
+api_router.include_router(profile_router,        prefix="/profile",        tags=["Personal Memory"])
+api_router.include_router(profile_router,        prefix="/memory",         tags=["Personal Memory"])
+api_router.include_router(autofill_router,       prefix="/autofill",       tags=["Smart Autofill"])
+api_router.include_router(reminders_router,      prefix="/reminders",      tags=["Reminders"])
+api_router.include_router(transcription_router,  prefix="/transcription",  tags=["Transcription"])
+api_router.include_router(fall_detection_router, prefix="/fall-detection", tags=["Fall Detection"])
+api_router.include_router(fall_detection_router, prefix="/fall",           tags=["Fall Detection"])
+api_router.include_router(emergency_router,      prefix="/emergency",      tags=["Emergency"])
+api_router.include_router(caregiver_router,      prefix="/caregiver",      tags=["Caregiver"])
+api_router.include_router(voice_router,          prefix="/voice",          tags=["Voice Assistant"])
+api_router.include_router(tts_router,            prefix="/tts",            tags=["Text-to-Speech"])
