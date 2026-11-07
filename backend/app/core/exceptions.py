@@ -73,7 +73,7 @@ class DocumentNotFoundError(SahaayiException):
 class DocumentProcessingError(SahaayiException):
     """Raised when document parsing / structuring fails."""
 
-    status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
+    status_code = getattr(status, "HTTP_422_UNPROCESSABLE_ENTITY", 422)
     detail = "Failed to process the document."
     error_code = "document_processing_error"
 
@@ -89,7 +89,7 @@ class InvalidFileTypeError(SahaayiException):
 class FileTooLargeError(SahaayiException):
     """Raised when an uploaded file exceeds the maximum allowed size."""
 
-    status_code = status.HTTP_413_CONTENT_TOO_LARGE
+    status_code = getattr(status, "HTTP_413_REQUEST_ENTITY_TOO_LARGE", 413)
     detail = "The uploaded file is too large."
     error_code = "file_too_large"
 
@@ -130,7 +130,7 @@ class ReminderNotFoundError(SahaayiException):
 class OCRProcessingError(SahaayiException):
     """Raised when Tesseract / PDF OCR extraction fails."""
 
-    status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
+    status_code = getattr(status, "HTTP_422_UNPROCESSABLE_ENTITY", 422)
     detail = "OCR processing failed."
     error_code = "ocr_processing_error"
 
@@ -141,7 +141,7 @@ class OCRProcessingError(SahaayiException):
 class TranscriptionError(SahaayiException):
     """Raised when audio transcription fails."""
 
-    status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
+    status_code = getattr(status, "HTTP_422_UNPROCESSABLE_ENTITY", 422)
     detail = "Audio transcription failed."
     error_code = "transcription_error"
 
@@ -160,7 +160,7 @@ class TranscriptionNotFoundError(SahaayiException):
 class FallDetectionError(SahaayiException):
     """Raised when fall event processing fails."""
 
-    status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
+    status_code = getattr(status, "HTTP_422_UNPROCESSABLE_ENTITY", 422)
     detail = "Fall detection event processing failed."
     error_code = "fall_detection_error"
 
