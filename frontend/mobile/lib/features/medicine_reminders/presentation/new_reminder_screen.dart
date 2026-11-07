@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../shared/widgets/sahaayi_button.dart';
 import '../../../shared/widgets/sahaayi_text_field.dart';
+import '../models/reminder_model.dart';
+import '../providers/reminder_provider.dart';
 
-class NewReminderScreen extends StatefulWidget {
+class NewReminderScreen extends ConsumerStatefulWidget {
   const NewReminderScreen({super.key});
 
   @override
-  State<NewReminderScreen> createState() => _NewReminderScreenState();
+  ConsumerState<NewReminderScreen> createState() => _NewReminderScreenState();
 }
 
-class _NewReminderScreenState extends State<NewReminderScreen> {
+class _NewReminderScreenState extends ConsumerState<NewReminderScreen> {
   final _nameController = TextEditingController();
   final _dosageController = TextEditingController(text: '1 ഗുളിക');
   String _selectedTiming = 'ഭക്ഷണത്തിന് ശേഷം (After Food)';
@@ -161,13 +164,34 @@ class _NewReminderScreenState extends State<NewReminderScreen> {
                 label: 'ഓർമ്മപ്പെടുത്തൽ സേവ് ചെയ്യുക',
                 icon: Icons.check_circle_outline_rounded,
                 onPressed: () {
-                  if (_nameController.text.trim().isEmpty) {
+                  final name = _nameController.text.trim();
+                  final dosage = _dosageController.text.trim();
+                  if (name.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text('ദയവായി മരുന്നിന്റെ പേര് നൽകുക')),
                     );
                     return;
                   }
+
+                  final now = DateTime.now();
+                  final scheduled = DateTime(now.year, now.month, now.day,
+                      _selectedTime.hour, _selectedTime.minute);
+
+                  final newModel = ReminderModel(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: name,
+                    dosage: dosage.isEmpty ? '1 ഗുളിക' : dosage,
+                    instructionsMl: _selectedTiming,
+                    reminderType: 'MEDICINE',
+                    scheduledTime: scheduled,
+                    isActive: true,
+                  );
+
+                  ref
+                      .read(reminderNotifierProvider.notifier)
+                      .addReminder(newModel);
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('മരുന്ന് ഓർമ്മപ്പെടുത്തൽ ക്രമീകരിച്ചു!'),

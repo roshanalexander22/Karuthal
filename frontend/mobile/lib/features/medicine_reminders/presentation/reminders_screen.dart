@@ -59,29 +59,41 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
       body: SafeArea(
         child: listAsync.when(
           data: (reminders) {
-            final sampleReminders = [
-              {
-                "id": "1",
-                "title": "പ്രഷർ മരുന്ന് (Telmisartan 40mg)",
-                "dosage": "1 ഗുളിക • ഭക്ഷണത്തിന് ശേഷം",
-                "time": "രാവിലെ 08:00 AM",
-                "isTaken": _completedIds.contains('1'),
-              },
-              {
-                "id": "2",
-                "title": "ഷുഗർ മരുന്ന് (Metformin 500mg)",
-                "dosage": "1 ഗുളിക • ഭക്ഷണത്തിന് മുൻപ്",
-                "time": "ഉച്ചയ്ക്ക് 01:30 PM",
-                "isTaken": _completedIds.contains('2'),
-              },
-              {
-                "id": "3",
-                "title": "കൊളസ്ട്രോൾ ഗുളിക (Atorvastatin 10mg)",
-                "dosage": "1 ഗുളിക • ഉറങ്ങാൻ നേരം",
-                "time": "രാത്രി 09:00 PM",
-                "isTaken": _completedIds.contains('3'),
-              },
-            ];
+            final activeReminders = reminders.isNotEmpty
+                ? reminders.map((r) => {
+                    "id": r['id'].toString(),
+                    "title": r['title'].toString(),
+                    "dosage":
+                        '${r['dosage'] ?? "1 ഗുളിക"} • ${r['instructions'] ?? "ഭക്ഷണത്തിന് ശേഷം"}',
+                    "time": r['time'].toString().contains('AM') ||
+                            r['time'].toString().contains('PM')
+                        ? r['time'].toString()
+                        : 'സമയം: ${r['time']}',
+                    "isTaken": _completedIds.contains(r['id'].toString()),
+                  }).toList()
+                : [
+                    {
+                      "id": "1",
+                      "title": "പ്രഷർ മരുന്ന് (Telmisartan 40mg)",
+                      "dosage": "1 ഗുളിക • ഭക്ഷണത്തിന് ശേഷം",
+                      "time": "രാവിലെ 08:00 AM",
+                      "isTaken": _completedIds.contains('1'),
+                    },
+                    {
+                      "id": "2",
+                      "title": "ഷുഗർ മരുന്ന് (Metformin 500mg)",
+                      "dosage": "1 ഗുളിക • ഭക്ഷണത്തിന് മുൻപ്",
+                      "time": "ഉച്ചയ്ക്ക് 01:30 PM",
+                      "isTaken": _completedIds.contains('2'),
+                    },
+                    {
+                      "id": "3",
+                      "title": "കൊളസ്ട്രോൾ ഗുളിക (Atorvastatin 10mg)",
+                      "dosage": "1 ഗുളിക • ഉറങ്ങാൻ നേരം",
+                      "time": "രാത്രി 09:00 PM",
+                      "isTaken": _completedIds.contains('3'),
+                    },
+                  ];
 
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 90),
@@ -102,7 +114,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'ഇന്ന് 3 മരുന്നുകൾ നിശ്ചയിച്ചിട്ടുണ്ട്. കൃത്യസമയത്ത് കഴിക്കാൻ സഹായി ഓർമ്മിപ്പിക്കും.',
+                          'ഇന്ന് ${activeReminders.length} മരുന്നുകൾ നിശ്ചയിച്ചിട്ടുണ്ട്. കൃത്യസമയത്ത് കഴിക്കാൻ സഹായി ഓർമ്മിപ്പിക്കും.',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -125,7 +137,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                ...sampleReminders.map((rem) {
+                ...activeReminders.map((rem) {
                   final isTaken = rem['isTaken'] as bool;
                   final id = rem['id'] as String;
 
