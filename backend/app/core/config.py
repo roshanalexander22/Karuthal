@@ -114,8 +114,9 @@ class Settings(BaseSettings):
     ]
 
     # ------------------------------------------------------------------
-    # AI / LLM (Google Gemini)
+    # AI / LLM (Google Gemini & AI Engine)
     # ------------------------------------------------------------------
+    AI_ENGINE_URL: str = "http://localhost:8001"
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-1.5-flash"
     AI_MAX_TOKENS: int = 4096
