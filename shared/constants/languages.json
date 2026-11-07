@@ -1,0 +1,4 @@
+[
+  {"code": "ml", "name": "Malayalam", "native_name": "മലയാളം", "is_primary": true},
+  {"code": "en", "name": "English", "native_name": "English", "is_primary": false}
+]

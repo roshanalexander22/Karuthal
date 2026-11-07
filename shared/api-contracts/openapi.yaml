@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info:
+  title: Sahaayi REST API
+  description: API specifications for Sahaayi Elder Care & Accessibility Assistant.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+paths:
+  /auth/register:
+    post:
+      summary: Register new user
+      operationId: registerUser
+      responses:
+        '201':
+          description: User created
+  /auth/login:
+    post:
+      summary: Authenticate and get JWT
+      operationId: loginUser
+      responses:
+        '200':
+          description: Token pair
+  /documents/upload:
+    post:
+      summary: Upload document
+      operationId: uploadDocument
+      responses:
+        '201':
+          description: Upload successful
+  /profile:
+    get:
+      summary: Get personal memory profile
+      operationId: getProfile
+      responses:
+        '200':
+          description: Profile retrieved
+  /autofill/match:
+    post:
+      summary: Match form fields to profile
+      operationId: matchFields
+      responses:
+        '200':
+          description: Field matches
+  /reminders:
+    get:
+      summary: List reminders
+      operationId: listReminders
+      responses:
+        '200':
+          description: Reminders list
+    post:
+      summary: Create reminder
+      operationId: createReminder
+      responses:
+        '201':
+          description: Reminder created
+  /fall-detection/events:
+    post:
+      summary: Report fall event
+      operationId: reportFall
+      responses:
+        '201':
+          description: Fall recorded
+  /emergency/trigger:
+    post:
+      summary: Trigger emergency broadcast
+      operationId: triggerEmergency
+      responses:
+        '200':
+          description: Emergency alerts dispatched

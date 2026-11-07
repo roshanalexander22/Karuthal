@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sahaayi-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=development
+      - DEBUG=true
+      - DATABASE_URL=postgresql+asyncpg://sahaayi_user:sahaayi_secure_password@postgres:5432/sahaayi_db
+      - REDIS_URL=redis://redis:6379/0
+      - AI_ENGINE_URL=http://ai-engine:8001
+      - SECRET_KEY=sahaayi-dev-secret-key-change-in-production-min-32-chars-long
+      - JWT_SECRET_KEY=sahaayi-jwt-secret-key-must-be-random-and-secure
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - ./backend/app:/app/app
+      - backend-uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - sahaayi-network
+
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    container_name: sahaayi-ai-engine
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    volumes:
+      - ./ai-engine:/app
+      - ai-models-cache:/root/.cache
+    networks:
+      - sahaayi-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: sahaayi-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=sahaayi_db
+      - POSTGRES_USER=sahaayi_user
+      - POSTGRES_PASSWORD=sahaayi_secure_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/schemas/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sahaayi_user -d sahaayi_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sahaayi-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: sahaayi-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sahaayi-network
+
+networks:
+  sahaayi-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  backend-uploads:
+  ai-models-cache:

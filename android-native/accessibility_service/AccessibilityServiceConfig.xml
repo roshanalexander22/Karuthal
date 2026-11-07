@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AccessibilityServiceConfig.xml
+    ================================
+    Configuration for SahaayiAccessibilityService.
+
+    This file is referenced in AndroidManifest.xml via:
+        android:resource="@xml/accessibility_service_config"
+
+    Event Types Explanation:
+    - typeViewClicked        : User taps on UI elements (track form interactions)
+    - typeViewFocused        : Focus moves to an input field (detect active field)
+    - typeWindowStateChanged : New screen / dialog opened (re-scan form fields)
+    - typeWindowContentChanged: Content on screen updated (refresh field list)
+
+    Feedback Types:
+    - feedbackSpoken  : Enables TalkBack-compatible spoken feedback
+    - feedbackGeneric : Generic feedback for custom UI rendering
+
+    Flags:
+    - flagReportViewIds              : Provides viewIdResourceName for each node,
+                                       required for reliable node identification
+    - flagRequestEnhancedWebAccessibility: Enables web content inspection in
+                                           WebView-based apps (required for
+                                           scanning forms inside browsers)
+
+    canRetrieveWindowContent:
+    - Required to traverse the accessibility node tree and extract form fields.
+    - Without this, we cannot detect field labels or positions.
+
+    notificationTimeout:
+    - 100ms delay before consecutive events are grouped. This prevents flooding
+      when typing or scrolling rapidly.
+
+    packageNames:
+    - Left empty to support ALL apps the user is working with.
+    - Sahaayi's Form Filling feature is app-agnostic by design.
+    - If a future security review requires allowlisting, add target packages here.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeViewClicked|typeViewFocused|typeWindowStateChanged|typeWindowContentChanged"
+    android:accessibilityFeedbackType="feedbackSpoken|feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagRequestEnhancedWebAccessibility"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_service_description"
+    android:notificationTimeout="100"
+    android:packageNames="" />

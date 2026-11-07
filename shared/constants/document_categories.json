@@ -1,0 +1,9 @@
+[
+  {"id": "IDENTITY", "label_en": "Identity Card", "label_ml": "തിരിച്ചറിയൽ രേഖ"},
+  {"id": "MEDICAL", "label_en": "Medical Report", "label_ml": "ചികിത്സാ രേഖ"},
+  {"id": "PRESCRIPTION", "label_en": "Prescription", "label_ml": "മരുന്ന് കുറിപ്പടി"},
+  {"id": "BANK", "label_en": "Bank Passbook", "label_ml": "ബാങ്ക് രേഖ"},
+  {"id": "ADDRESS", "label_en": "Address Proof", "label_ml": "മേൽവിലാസ രേഖ"},
+  {"id": "CERTIFICATE", "label_en": "Certificate", "label_ml": "സർട്ടിഫിക്കറ്റ്"},
+  {"id": "OTHER", "label_en": "Other Document", "label_ml": "മറ്റു രേഖകൾ"}
+]
