@@ -547,33 +547,44 @@ make lint-frontend   # Runs flutter analyze
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Roadmap & Implementation Progress
 
 - [x] **Phase 0: Architecture & Foundation (Completed)**
   - Full root directory scaffolding, 196 verified files, and modular separation.
   - Shared OpenAPI 3.1 contract and relational PostgreSQL DDL.
   - CI/CD workflows and multi-service Docker configuration.
-- [ ] **Phase 1: Core Authentication & Mobile Shell**
-  - End-to-end JWT authentication with secure token storage.
-  - Verification of high-contrast Malayalam UI and screen navigation.
-- [ ] **Phase 2: Document OCR & Verified Memory Bank**
-  - Tesseract Malayalam language integration and prescription parsing.
-  - Interactive field verification interface in Flutter.
-- [ ] **Phase 3: Malayalam Voice Assistant & TTS**
-  - Integration of Indic-TTS and streaming voice comprehension.
-  - Android AccessibilityService screen reading platform channel bridge.
-- [ ] **Phase 4: Medicine Reminders & Caregiver Sync**
-  - Exact alarms via Android `AlarmManager` and missed-dose escalation.
-- [ ] **Phase 5: Smart Autofill Platform (Joint Co-Development)**
-  - Accessible form inspection, semantic label matching, and confirmed injection.
-- [ ] **Phase 6: Low-Latency Audio Transcription**
-  - Streaming audio WebSocket pipeline with doctor-visit summarization.
-- [ ] **Phase 7: Sensor-Based Fall Detection (Experimental)**
-  - TFLite accelerometer heuristic refinement and false-positive countdown.
-- [ ] **Phase 8: Caregiver & Emergency Portal**
-  - One-tap SOS broadcast with location sharing and consent-based dashboard.
-- [ ] **Phase 9: Field Testing & Accessibility Hardening**
-  - Usability trials with senior citizens in Kerala and performance optimization.
+- [x] **Phase 1: Core Inspection, Bug Fixes & Branching (Completed)**
+  - Non-blocking database startup, Pydantic v2 migration, Flutter linter & dependency conflict resolution.
+- [x] **Phase 2: Malayalam Speech Recognition & TTS (Completed - Member 2)**
+  - AI Engine ASR (`/asr/transcribe`), TTS synthesis (`/tts/synthesize`), and Malayalam intent router (`/intent/detect`).
+  - Backend `/api/v1/voice/chat`, `/api/v1/voice/history`, and `/api/v1/tts/convert`.
+  - Accessible Flutter Voice Assistant UI and `TTSService` with queue management and natural elder-friendly pace.
+- [x] **Phase 3: OCR Document Reader (Completed - Member 2)**
+  - Image & PDF processing using Tesseract OCR (`eng+mal`), PyMuPDF (`fitz`), and contrast preprocessing.
+  - Document upload, file storage via `FileService`, metadata storage, deletion, and TTS read aloud.
+  - Mobile camera capture (`image_picker`) and file picker (`file_picker`) integration.
+- [x] **Phase 4: Document Information Extraction & Personal Memory (Completed - Member 2)**
+  - Structured entity extraction (Aadhaar, PAN, DOB, Phone, Prescriptions) via regex and configurable Gemini LLM.
+  - Strict separation of unverified draft data and user-verified personal memory bank.
+  - Flutter Personal Memory interface with interactive field verification and editing.
+- [x] **Phase 5: Medicine & Appointment Management (Completed - Member 2)**
+  - Medicine and doctor/hospital appointment scheduling with recurrence rules.
+  - Android native `AlarmManager.setExactAndAllowWhileIdle` and notification service integration.
+  - Dose acknowledgement tracking ("Mark as Taken") and missed reminder history.
+- [x] **Phase 6: Low-Latency Audio Transcription (Completed - Member 2)**
+  - Audio recording upload, chunked transcription, timestamped segments, and AI summaries with action items.
+  - Interactive Flutter transcription recording and history review UI.
+- [x] **Phase 7: Sensor-Based Fall & Distress Detection (Completed - Member 2)**
+  - Native Android tri-axial accelerometer/gyroscope 3-phase fall detection algorithm.
+  - Accessible 30-second cancellation countdown alert with audible siren simulation.
+  - Emergency SOS broadcast dispatch with GPS telemetry to registered caregiver contacts.
+- [x] **Joint Feature: Smart Autofill Platform (Completed - Co-development)**
+  - Semantic label matching connecting on-screen form labels to verified personal memory bank.
+  - Exclusion of passwords/sensitive fields and mandatory user confirmation dialog before injection.
+- [ ] **Phase 8: Caregiver & Family Web Portal Integration**
+  - Remote health dashboard for family members and authorized caregivers.
+- [ ] **Phase 9: Field Testing & Usability Trials**
+  - Accessibility trials with senior citizen communities in Kerala.
 
 ---
 

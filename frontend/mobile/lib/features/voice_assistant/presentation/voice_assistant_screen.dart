@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/voice_provider.dart';
+import '../../text_to_speech/services/tts_service.dart';
 
 class VoiceAssistantScreen extends ConsumerWidget {
   const VoiceAssistantScreen({super.key});

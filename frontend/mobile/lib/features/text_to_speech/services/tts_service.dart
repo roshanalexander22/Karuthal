@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 enum TTSState { stopped, playing, paused }
@@ -144,3 +145,9 @@ class TTSService {
   bool get isSpeaking => _state == TTSState.playing;
   bool get isPaused => _state == TTSState.paused;
 }
+
+final ttsServiceProvider = Provider<TTSService>((ref) {
+  final service = TTSService();
+  service.init();
+  return service;
+});

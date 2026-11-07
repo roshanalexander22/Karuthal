@@ -178,12 +178,6 @@ class VoiceNotifier extends StateNotifier<VoiceState> {
   }
 }
 
-final ttsServiceProvider = Provider<TTSService>((ref) {
-  final service = TTSService();
-  service.init();
-  return service;
-});
-
 final voiceProvider = StateNotifierProvider<VoiceNotifier, VoiceState>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final ttsService = ref.watch(ttsServiceProvider);
