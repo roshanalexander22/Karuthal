@@ -178,6 +178,7 @@ ios/Flutter/app.zip
 ios/Flutter/flutter_assets/
 ios/ServiceDefinitions.json
 ios/Runner/GeneratedPluginRegistrant.*
+**/GeneratedPluginRegistrant.java
 
 # Dart generated code
 *.g.dart
