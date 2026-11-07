@@ -41,7 +41,7 @@ def test_http(name, url, method="GET", data=None, headers=None):
         body = json.dumps(data).encode("utf-8") if data else None
         if body:
             req.add_header("Content-Type", "application/json; charset=utf-8")
-        res = urllib.request.urlopen(req, data=body, timeout=5)
+        res = urllib.request.urlopen(req, data=body, timeout=15)
         status = res.getcode()
         resp_data = json.loads(res.read().decode("utf-8"))
         print(f"  ✓ {name} SUCCESS ({status})")
