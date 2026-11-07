@@ -74,8 +74,12 @@ class ConfirmationDialog extends StatelessWidget {
           children: [
             AccessibleButton(
               label: confirmLabel,
-              backgroundColor: isDestructive ? theme.colorScheme.error : theme.colorScheme.primary,
-              textColor: isDestructive ? theme.colorScheme.onError : theme.colorScheme.onPrimary,
+              backgroundColor: isDestructive
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.primary,
+              textColor: isDestructive
+                  ? theme.colorScheme.onError
+                  : theme.colorScheme.onPrimary,
               onPressed: onConfirm,
             ),
             const SizedBox(height: 12),
@@ -83,12 +87,14 @@ class ConfirmationDialog extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(56),
                 side: BorderSide(color: theme.colorScheme.outline, width: 2),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
               ),
               onPressed: onCancel ?? () => Navigator.of(context).pop(),
               child: Text(
                 cancelLabel,
-                style: TextStyle(fontSize: 18, color: theme.colorScheme.onSurface),
+                style:
+                    TextStyle(fontSize: 18, color: theme.colorScheme.onSurface),
               ),
             ),
           ],

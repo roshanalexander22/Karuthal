@@ -23,21 +23,50 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     routes: [
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-      GoRoute(path: '/auth/login', builder: (context, state) => const LoginScreen()),
-      GoRoute(path: '/auth/register', builder: (context, state) => const RegisterScreen()),
-      GoRoute(path: '/voice', builder: (context, state) => const VoiceAssistantScreen()),
-      GoRoute(path: '/tts', builder: (context, state) => const TextToSpeechScreen()),
-      GoRoute(path: '/documents', builder: (context, state) => const DocumentListScreen()),
-      GoRoute(path: '/documents/upload', builder: (context, state) => const DocumentUploadScreen()),
-      GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
-      GoRoute(path: '/autofill', builder: (context, state) => const AutofillScreen()),
-      GoRoute(path: '/reminders', builder: (context, state) => const RemindersScreen()),
-      GoRoute(path: '/reminders/new', builder: (context, state) => const NewReminderScreen()),
-      GoRoute(path: '/transcription', builder: (context, state) => const TranscriptionScreen()),
-      GoRoute(path: '/fall-detection', builder: (context, state) => const FallDetectionScreen()),
-      GoRoute(path: '/emergency', builder: (context, state) => const EmergencyScreen()),
-      GoRoute(path: '/caregiver', builder: (context, state) => const CaregiverScreen()),
-      GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
+      GoRoute(
+          path: '/auth/login',
+          builder: (context, state) => const LoginScreen()),
+      GoRoute(
+          path: '/auth/register',
+          builder: (context, state) => const RegisterScreen()),
+      GoRoute(
+          path: '/voice',
+          builder: (context, state) => const VoiceAssistantScreen()),
+      GoRoute(
+          path: '/tts',
+          builder: (context, state) => const TextToSpeechScreen()),
+      GoRoute(
+          path: '/documents',
+          builder: (context, state) => const DocumentListScreen()),
+      GoRoute(
+          path: '/documents/upload',
+          builder: (context, state) => const DocumentUploadScreen()),
+      GoRoute(
+          path: '/profile', builder: (context, state) => const ProfileScreen()),
+      GoRoute(
+          path: '/autofill',
+          builder: (context, state) => const AutofillScreen()),
+      GoRoute(
+          path: '/reminders',
+          builder: (context, state) => const RemindersScreen()),
+      GoRoute(
+          path: '/reminders/new',
+          builder: (context, state) => const NewReminderScreen()),
+      GoRoute(
+          path: '/transcription',
+          builder: (context, state) => const TranscriptionScreen()),
+      GoRoute(
+          path: '/fall-detection',
+          builder: (context, state) => const FallDetectionScreen()),
+      GoRoute(
+          path: '/emergency',
+          builder: (context, state) => const EmergencyScreen()),
+      GoRoute(
+          path: '/caregiver',
+          builder: (context, state) => const CaregiverScreen()),
+      GoRoute(
+          path: '/settings',
+          builder: (context, state) => const SettingsScreen()),
     ],
   );
 });

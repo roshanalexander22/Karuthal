@@ -23,8 +23,10 @@ Dio _buildDio(Ref ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: AppConfig.apiBaseUrl,
-      connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
-      receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
+      connectTimeout:
+          const Duration(milliseconds: AppConstants.connectTimeoutMs),
+      receiveTimeout:
+          const Duration(milliseconds: AppConstants.receiveTimeoutMs),
       sendTimeout: const Duration(milliseconds: AppConstants.sendTimeoutMs),
       headers: {
         'Accept': 'application/json',
@@ -63,7 +65,8 @@ class _LoggingInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    AppLogger.e('✗ ${err.requestOptions.method} ${err.requestOptions.uri}', err);
+    AppLogger.e(
+        '✗ ${err.requestOptions.method} ${err.requestOptions.uri}', err);
     handler.next(err);
   }
 }
@@ -251,7 +254,8 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) =>
-      _dio.post<T>(path, data: data, queryParameters: queryParameters, options: options);
+      _dio.post<T>(path,
+          data: data, queryParameters: queryParameters, options: options);
 
   Future<Response<T>> patch<T>(
     String path, {

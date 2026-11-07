@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app/theme.dart';
 
 class SahaayiButton extends StatelessWidget {
   final String label;
@@ -7,6 +8,7 @@ class SahaayiButton extends StatelessWidget {
   final bool isLoading;
   final Color? backgroundColor;
   final Color? textColor;
+  final double minHeight;
 
   const SahaayiButton({
     super.key,
@@ -16,6 +18,7 @@ class SahaayiButton extends StatelessWidget {
     this.isLoading = false,
     this.backgroundColor,
     this.textColor,
+    this.minHeight = 56.0,
   });
 
   @override
@@ -24,32 +27,35 @@ class SahaayiButton extends StatelessWidget {
       button: true,
       label: label,
       child: SizedBox(
-        height: 60.0, // High accessibility touch target
+        height: minHeight,
         width: double.infinity,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
+            backgroundColor: backgroundColor ?? SahaayiColors.primary,
             foregroundColor: textColor ?? Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            elevation: 2,
+            elevation: 1,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: isLoading ? null : onPressed,
           child: isLoading
               ? const SizedBox(
                   height: 24,
                   width: 24,
-                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                  child: CircularProgressIndicator(
+                      color: Colors.white, strokeWidth: 2.5),
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (icon != null) ...[
-                      Icon(icon, size: 28),
-                      const SizedBox(width: 12),
+                      Icon(icon, size: 26),
+                      const SizedBox(width: 10),
                     ],
                     Text(
                       label,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

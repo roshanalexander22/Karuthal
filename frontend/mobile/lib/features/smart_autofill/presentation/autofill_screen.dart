@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app/theme.dart';
 import '../../../shared/widgets/accessible_button.dart';
 import '../../../shared/widgets/accessible_card.dart';
+import '../../../shared/widgets/sahaayi_button.dart';
 import '../providers/autofill_provider.dart';
 
 class AutofillScreen extends ConsumerWidget {
@@ -11,189 +14,289 @@ class AutofillScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(autofillProvider);
     final notifier = ref.read(autofillProvider.notifier);
-    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: SahaayiColors.background,
       appBar: AppBar(
         title: const Text('സ്മാർട്ട് ഫോം (Smart Autofill)'),
+        backgroundColor: SahaayiColors.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded,
+              color: SahaayiColors.textMain),
+          onPressed: () => context.pop(),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Status Card
-            AccessibleCard(
-              backgroundColor: state.isAccessibilityActive
-                  ? theme.colorScheme.primaryContainer.withAlpha(80)
-                  : theme.colorScheme.errorContainer.withAlpha(80),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        state.isAccessibilityActive
-                            ? Icons.check_circle_outline
-                            : Icons.warning_amber_rounded,
-                        color: state.isAccessibilityActive
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.error,
-                        size: 32,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          state.isAccessibilityActive
-                              ? 'സഹായ സേവനം സജീവം'
-                              : 'സഹായ സേവനം ഓഫ് ചെയ്തിരിക്കുന്നു',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    state.isAccessibilityActive
-                        ? 'സഹായിക്ക് സ്ക്രീൻ പരിശോധിച്ച് ഫോമുകൾ പൂരിപ്പിക്കാൻ അനുമതിയുണ്ട്.'
-                        : 'സ്ക്രീൻ വിവരങ്ങൾ വായിക്കാൻ ക്രമീകരണങ്ങളിൽ സഹായി ആക്സസിബിലിറ്റി സർവീസ് ഓൺ ചെയ്യുക.',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  if (!state.isAccessibilityActive) ...[
-                    const SizedBox(height: 14),
-                    AccessibleButton(
-                      label: 'ക്രമീകരണങ്ങൾ തുറക്കുക',
-                      icon: Icons.settings,
-                      minHeight: 48,
-                      onPressed: () => notifier.openSettings(),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Scan Screen Action
-            AccessibleButton(
-              label: state.status == AutofillStatus.scanning
-                  ? 'സ്ക്രീൻ പരിശോധിക്കുന്നു...'
-                  : 'സ്ക്രീൻ പരിശോധിച്ച് ഫോം കണ്ടെത്തുക',
-              icon: Icons.document_scanner_outlined,
-              isLoading: state.status == AutofillStatus.scanning,
-              onPressed: state.status == AutofillStatus.scanning || state.status == AutofillStatus.injecting
-                  ? null
-                  : () => notifier.scanScreenAndMatch(),
-            ),
-
-            // Error Message
-            if (state.errorMessage != null) ...[
-              const SizedBox(height: 16),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 1. Service Status Card
               AccessibleCard(
-                backgroundColor: theme.colorScheme.errorContainer,
-                child: Row(
-                  children: [
-                    Icon(Icons.error_outline, color: theme.colorScheme.error, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        state.errorMessage!,
-                        style: TextStyle(color: theme.colorScheme.onErrorContainer),
-                      ),
-                    ),
-                  ],
+                backgroundColor: state.isAccessibilityActive
+                    ? SahaayiColors.secondary
+                    : SahaayiColors.rose,
+                border: BorderSide(
+                  color: state.isAccessibilityActive
+                      ? SahaayiColors.primary
+                      : SahaayiColors.emergency,
+                  width: 1.5,
                 ),
-              ),
-            ],
-
-            // Success Message
-            if (state.successMessage != null) ...[
-              const SizedBox(height: 16),
-              AccessibleCard(
-                backgroundColor: theme.colorScheme.tertiaryContainer,
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.check_circle, color: theme.colorScheme.tertiary, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        state.successMessage!,
-                        style: TextStyle(color: theme.colorScheme.onTertiaryContainer),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-
-            // Detected Proposals List
-            if (state.proposals.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Text(
-                'കണ്ടെത്തിയ വിവരങ്ങൾ (${state.proposals.length})',
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'പൂരിപ്പിക്കാൻ ആഗ്രഹിക്കുന്ന വിവരങ്ങൾ പരിശോധിച്ച് ഉറപ്പുവരുത്തുക:',
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 12),
-              ...state.proposals.map((proposal) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: AccessibleCard(
-                    onTap: () => notifier.toggleProposal(proposal.nodeId),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    Row(
                       children: [
-                        Checkbox(
-                          value: proposal.isConfirmed,
-                          onChanged: (_) => notifier.toggleProposal(proposal.nodeId),
+                        Icon(
+                          state.isAccessibilityActive
+                              ? Icons.check_circle_rounded
+                              : Icons.warning_amber_rounded,
+                          color: state.isAccessibilityActive
+                              ? SahaayiColors.primaryDark
+                              : SahaayiColors.emergency,
+                          size: 30,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                proposal.profileFieldName.toUpperCase(),
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                proposal.proposedValue,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            state.isAccessibilityActive
+                                ? 'സഹായ സേവനം സജീവം (Active)'
+                                : 'സഹായ സേവനം ഓഫാണ് (Permission Required)',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: state.isAccessibilityActive
+                                  ? SahaayiColors.primaryDark
+                                  : SahaayiColors.emergency,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                );
-              }),
-              const SizedBox(height: 16),
-              AccessibleButton(
-                label: state.status == AutofillStatus.injecting
-                    ? 'പൂരിപ്പിക്കുന്നു...'
-                    : 'സ്ഥിരീകരിച്ച് പൂരിപ്പിക്കുക',
-                icon: Icons.check,
-                backgroundColor: theme.colorScheme.primary,
-                isLoading: state.status == AutofillStatus.injecting,
-                onPressed: state.status == AutofillStatus.injecting
-                    ? null
-                    : () => notifier.confirmAndInject(),
+                    const SizedBox(height: 10),
+                    Text(
+                      state.isAccessibilityActive
+                          ? 'സഹായിക്ക് സ്ക്രീൻ പരിശോധിച്ച് ഫോമുകൾ പൂരിപ്പിക്കാൻ പൂർണ്ണ അനുമതിയുണ്ട്.'
+                          : 'മറ്റു ആപ്പുകളിലെ ഫോമുകൾ പൂരിപ്പിക്കാൻ ആൻഡ്രോയിഡ് ക്രമീകരണങ്ങളിൽ സഹായി ആക്സസിബിലിറ്റി സർവീസ് ഓൺ ചെയ്യുക.',
+                      style: const TextStyle(
+                          fontSize: 15, color: SahaayiColors.textMain),
+                    ),
+                    if (!state.isAccessibilityActive) ...[
+                      const SizedBox(height: 14),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: SahaayiColors.emergency,
+                          side: const BorderSide(
+                              color: SahaayiColors.emergency, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        icon: const Icon(Icons.settings_outlined, size: 22),
+                        label: const Text(
+                            'ക്രമീകരണങ്ങൾ തുറക്കുക (Open Settings)',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        onPressed: () => notifier.openSettings(),
+                      ),
+                    ],
+                  ],
+                ),
               ),
+
+              const SizedBox(height: 16),
+
+              // 2. Safety & Privacy Guarantee Note
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: SahaayiColors.border),
+                ),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.shield_outlined,
+                        color: SahaayiColors.primaryDark, size: 26),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'സുരക്ഷിത ഫോം ഫില്ലർ',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: SahaayiColors.textMain),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'സഹായി പാസ്‌വേഡ്, ഒ.ടി.പി, ബാങ്കിംഗ് പിൻ എന്നിവ ഒരിക്കലും വായിക്കുകയോ പൂരിപ്പിക്കുകയോ ചെയ്യില്ല. നിങ്ങൾ ഉറപ്പുവരുത്തിയ വിവരങ്ങൾ മാത്രമേ ഉപയോഗിക്കൂ.',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: SahaayiColors.textSecondary,
+                                height: 1.3),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 3. Scan & Match Trigger Button
+              AccessibleButton(
+                label: state.status == AutofillStatus.scanning
+                    ? 'സ്ക്രീൻ പരിശോധിക്കുന്നു...'
+                    : 'സ്ക്രീൻ പരിശോധിച്ച് ഫോം കണ്ടെത്തുക',
+                icon: Icons.document_scanner_rounded,
+                backgroundColor: SahaayiColors.primary,
+                isLoading: state.status == AutofillStatus.scanning,
+                onPressed: state.status == AutofillStatus.scanning ||
+                        state.status == AutofillStatus.injecting
+                    ? null
+                    : () => notifier.scanScreenAndMatch(),
+              ),
+
+              // Feedback messages
+              if (state.errorMessage != null) ...[
+                const SizedBox(height: 16),
+                AccessibleCard(
+                  backgroundColor: SahaayiColors.rose,
+                  border: const BorderSide(color: SahaayiColors.emergency),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.error_outline,
+                          color: SahaayiColors.emergency, size: 28),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          state.errorMessage!,
+                          style: const TextStyle(
+                              color: SahaayiColors.emergency,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              if (state.successMessage != null) ...[
+                const SizedBox(height: 16),
+                AccessibleCard(
+                  backgroundColor: SahaayiColors.secondary,
+                  border: const BorderSide(color: SahaayiColors.primary),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle_rounded,
+                          color: SahaayiColors.primaryDark, size: 28),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          state.successMessage!,
+                          style: const TextStyle(
+                              color: SahaayiColors.primaryDark,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              // 4. Proposed matches list
+              if (state.proposals.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                const Text(
+                  'കണ്ടെത്തിയ വിവരങ്ങൾ:',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: SahaayiColors.textMain),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'പൂരിപ്പിക്കാൻ ആഗ്രഹിക്കുന്നവ ടിക്ക് ചെയ്യുക:',
+                  style: TextStyle(
+                      fontSize: 15, color: SahaayiColors.textSecondary),
+                ),
+                const SizedBox(height: 12),
+
+                ...state.proposals.map((proposal) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: AccessibleCard(
+                      backgroundColor: Colors.white,
+                      border: BorderSide(
+                        color: proposal.isConfirmed
+                            ? SahaayiColors.primary
+                            : SahaayiColors.border,
+                        width: proposal.isConfirmed ? 2 : 1,
+                      ),
+                      onTap: () => notifier.toggleProposal(proposal.nodeId),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: proposal.isConfirmed,
+                            activeColor: SahaayiColors.primary,
+                            onChanged: (_) =>
+                                notifier.toggleProposal(proposal.nodeId),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  proposal.profileFieldName.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: SahaayiColors.primaryDark,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  proposal.proposedValue,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: SahaayiColors.textMain,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+
+                const SizedBox(height: 16),
+
+                // Confirm and Inject Button
+                SahaayiButton(
+                  label: state.status == AutofillStatus.injecting
+                      ? 'പൂരിപ്പിക്കുന്നു...'
+                      : 'സ്ഥിരീകരിച്ച് പൂരിപ്പിക്കുക (Confirm & Fill)',
+                  icon: Icons.check_circle_rounded,
+                  backgroundColor: SahaayiColors.primary,
+                  isLoading: state.status == AutofillStatus.injecting,
+                  onPressed: state.status == AutofillStatus.injecting
+                      ? null
+                      : () => notifier.confirmAndInject(),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

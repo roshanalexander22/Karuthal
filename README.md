@@ -19,7 +19,11 @@
    - [Architectural Topology](#architectural-topology)
    - [Subsystem Breakdown](#subsystem-breakdown)
    - [Component Communication Protocols](#component-communication-protocols)
-5. [Core Features & Technical Workflows](#-core-features--technical-workflows)
+5. [Accessible UI/UX Design System & Hackathon Deliverables](#-accessible-uiux-design-system--hackathon-deliverables)
+   - [Color Palette Specification](#color-palette-specification)
+   - [Elderly Accessibility Standards](#elderly-accessibility-standards)
+   - [Screen-by-Screen Implementation](#screen-by-screen-implementation)
+6. [Core Features & Technical Workflows](#-core-features--technical-workflows)
    - [Feature 1: Malayalam TTS & Screen Reading](#feature-1-malayalam-tts--screen-reading)
    - [Feature 2: OCR Document Reader & Verified Personal Memory](#feature-2-ocr-document-reader--verified-personal-memory)
    - [Feature 3: Medicine & Appointment Management](#feature-3-medicine--appointment-management)
@@ -78,6 +82,7 @@ By bridging modern mobile accessibility frameworks, regional Indian language spe
 | **Automated Verification Harness** | **COMPLETED & VERIFIED** | Member 1 | `scripts/verify_all.py` (14 automated checks covering all tiers). |
 | **CI/CD Pipelines (GitHub Actions)** | **COMPLETED & VERIFIED** | Member 1 | `backend-ci.yml`, `frontend-ci.yml`, `ai-engine-ci.yml` targeting `main`/`develop`. |
 | **Member 2 Integration & Onboarding** | **COMPLETED & VERIFIED** | Member 1 | `docs/MEMBER_2_ONBOARDING.md` & `docs/member-2-onboarding.md`. |
+| **Hackathon Accessible UI/UX Suite** | **COMPLETED & VERIFIED** | Member 1 | 10 accessible screens, light theme `#F8FAFC`/`#4EAD91`, 56dp touch targets, Malayalam typography. |
 | **Malayalam Text-to-Speech (Indic-TTS)** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Scaffolding in `ai-engine/text_to_speech/`, awaiting model loading. |
 | **Malayalam Speech Recognition (ASR)** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Scaffolding in `ai-engine/speech_recognition/`, awaiting model loading. |
 | **OCR Document Reader (Tesseract 5)** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Upload & status API ready; Malayalam OCR pipeline in progress. |
@@ -210,6 +215,56 @@ Sahaayi utilizes a decoupled, microservices-oriented architecture across three d
 | Backend API | AI Engine | HTTP REST (Internal) | Dispatching OCR jobs, LLM extraction queries, and semantic matching |
 | Backend API | PostgreSQL | PostgreSQL Wire (`asyncpg`)| Asynchronous persistence with connection pooling |
 | Backend API | Redis | Redis Protocol (RESP) | Token revocation lists, session state, and job queues |
+
+---
+
+## 🎨 Accessible UI/UX Design System & Hackathon Deliverables
+
+Sahaayi's mobile client features a ground-up, elderly-accessible design system crafted specifically for senior citizens and individuals with low vision, motor tremors, or digital anxiety.
+
+### Color Palette Specification
+
+A light, calming, high-contrast palette is enforced (`ThemeMode.light` only) to eliminate visual ambiguity and eye fatigue:
+
+| Color Token | Hex Code | Visual Swatch | Semantic Purpose |
+|---|---|---|---|
+| **Background** | `#F8FAFC` | ⬜ Soft Off-White | Clean, non-glare canvas across all screens |
+| **Primary** | `#4EAD91` | 🟩 Mint Green | Main actions, positive affirmations, key status pills |
+| **Secondary** | `#DFF3EC` | 🟩 Pastel Mint Tint | Selected states, badge backgrounds, icon containers |
+| **Accent** | `#DCEBFA` | 🟦 Soft Pastel Sky Blue | Information banners, active sensor/GPS badges |
+| **Card Surface**| `#FFFFFF` | ⬜ Crisp White | Isolated, elevation-shadowed content cards (20dp radius) |
+| **Main Text** | `#263238` | ⬛ Dark Charcoal | High-contrast readability for all Malayalam & English typography |
+| **Secondary** | `#718096` | 🔘 Cool Slate Gray | Informative subheadings and secondary metadata |
+| **Danger / SOS**| `#DC2626` | 🟥 Deep Coral Red | Emergency triggers, distress cancellations, secure logout |
+
+### Elderly Accessibility Standards
+
+1. **Touch Target Dimensions**: All primary buttons (`SahaayiButton`, `AccessibleButton`) strictly enforce a minimum height of **56dp** (surpassing the WCAG 48dp guideline) with generous hitboxes for users with motor tremors.
+2. **Typography Floor**: Body typography begins at **18sp**, subheadings at **20sp**, and primary titles at **24sp**, using clear Malayalam rendering that eliminates script truncation and diacritic clipping.
+3. **No Dark Mode Ambiguity**: Senior users frequently struggle with low-contrast dark themes; Sahaayi locks to a clean, bright, legible light theme.
+4. **Card-Based Visual Hierarchy**: Screens are segmented into distinct rounded cards (`AccessibleCard`, 20dp border radius, 1.2px subtle borders) to reduce cognitive load and isolate actionable items.
+5. **Multi-Modal Feedback**: Haptic pulses, voice confirmations, and high-visibility status chips accompany all interactive gestures.
+
+### Screen-by-Screen Implementation
+
+| Screen | Route | Capabilities & Features |
+|---|---|---|
+| **Welcome & Login** | `/auth/login` | Sahaayi branding, large input fields, eye password toggle, instant feedback banner, wired to real JWT API. |
+| **Registration** | `/auth/register` | Full name, email, phone, and password with real-time validation and error recovery. |
+| **Home Dashboard** | `/` | Warm Malayalam greeting banner (*"നമസ്കാരം! ഇന്ന് സഹായി എന്തു ചെയ്യണം?"*), live medicine reminder alert card, emergency SOS quick trigger, 5 primary service cards, 4-tab bottom navigation. |
+| **OCR Document Vault** | `/documents` | Categorized cards (Identity, Medical, Banking), status badges (*"ഉറപ്പിച്ചു"* / *"പരിശോധനയിൽ"*), interactive detail bottom sheet modal, and upload dropzone. |
+| **Document Upload** | `/documents/upload`| Camera capture, file picker, document category choice chips, and high-visibility preview. |
+| **Medicine Reminders** | `/reminders` | Schedule summary card, interactive checkmark toggle marking doses taken with visual distinction, and new schedule creator. |
+| **New Reminder Form** | `/reminders/new` | Medicine name, dosage, native `TimePicker` integration, meal timing chips (Before food, After food, Bedtime). |
+| **Malayalam Voice Assistant**| `/voice` | Real-time listening indicator, interactive 96dp animated mic with glow effect, live Malayalam transcript card, and suggested question chips. |
+| **Smart Autofill Assistant** | `/autofill` | Accessibility service status card, privacy guarantee note (zero passwords/OTPs), screen inspection trigger, proposed fields checklist, and confirmed form injection. |
+| **Verified Memory Profile** | `/profile` | Verified user identity card (*മാധവൻ നായർ, 74 yrs, Kottayam*), verified memory bank cards with green badges, and caregiver sync link. |
+| **Emergency SOS Hub** | `/emergency` | High-visibility 190dp SOS trigger, one-tap calling cards (Caregiver, Family Doctor, 108 Ambulance), GPS status badge, and *"I am Safe"* cancellation. |
+| **Settings & Accessibility**| `/settings` | Malayalam/English language toggle, font size selector (Normal/Large/Extra Large), speech rate slider (0.85x recommended), high-contrast mode, and confirmed logout dialog. |
+| **Caregiver Coordination** | `/caregiver` | Connected caregiver relationship cards, contact shortcuts, permission scopes, and new caregiver linking. |
+| **Fall Detection Alert** | `/fall-detection`| Medical disclaimer notice, live sensor accelerometer telemetry toggle (1.02g baseline), and 3-step automated safety explanation. |
+| **Screen Reading (TTS)** | `/tts` | Malayalam speech synthesis playground, large text editor, read aloud and stop controls. |
+| **Audio Transcription** | `/transcription` | Voice note recorder, real-time audio waveform simulation, and Malayalam AI transcript display with clipboard copy. |
 
 ---
 

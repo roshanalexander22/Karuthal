@@ -65,24 +65,30 @@ class AccessibleTextField extends StatelessWidget {
               helperText: helperText,
               helperMaxLines: 2,
               helperStyle: const TextStyle(fontSize: 14),
-              prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 26) : null,
+              prefixIcon:
+                  prefixIcon != null ? Icon(prefixIcon, size: 26) : null,
               suffixIcon: suffix,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: theme.colorScheme.outline, width: 2),
+                borderSide:
+                    BorderSide(color: theme.colorScheme.outline, width: 2),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: theme.colorScheme.outline, width: 2),
+                borderSide:
+                    BorderSide(color: theme.colorScheme.outline, width: 2),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: theme.colorScheme.primary, width: 3),
+                borderSide:
+                    BorderSide(color: theme.colorScheme.primary, width: 3),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: theme.colorScheme.error, width: 2.5),
+                borderSide:
+                    BorderSide(color: theme.colorScheme.error, width: 2.5),
               ),
             ),
           ),

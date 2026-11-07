@@ -48,11 +48,13 @@ class AudioControlWidget extends StatelessWidget {
             children: [
               // Play / Resume
               Semantics(
-                label: isPlaying && !isPaused ? 'Pause Reading' : 'Play Reading',
+                label:
+                    isPlaying && !isPaused ? 'Pause Reading' : 'Play Reading',
                 button: true,
                 child: IconButton.filled(
                   iconSize: 36,
-                  icon: Icon(isPlaying && !isPaused ? Icons.pause : Icons.play_arrow),
+                  icon: Icon(
+                      isPlaying && !isPaused ? Icons.pause : Icons.play_arrow),
                   onPressed: isPlaying && !isPaused ? onPause : onPlay,
                   style: IconButton.styleFrom(
                     minimumSize: const Size(60, 60),
@@ -80,9 +82,18 @@ class AudioControlWidget extends StatelessWidget {
                 tooltip: 'വായനാ വേഗത (Speech Speed)',
                 onSelected: onSpeedChanged,
                 itemBuilder: (context) => const [
-                  PopupMenuItem(value: 0.75, child: Text('0.75x (പതുക്കെ - Slow)', style: TextStyle(fontSize: 18))),
-                  PopupMenuItem(value: 1.0, child: Text('1.0x (സാധാരണ - Normal)', style: TextStyle(fontSize: 18))),
-                  PopupMenuItem(value: 1.25, child: Text('1.25x (വേഗത്തിൽ - Fast)', style: TextStyle(fontSize: 18))),
+                  PopupMenuItem(
+                      value: 0.75,
+                      child: Text('0.75x (പതുക്കെ - Slow)',
+                          style: TextStyle(fontSize: 18))),
+                  PopupMenuItem(
+                      value: 1.0,
+                      child: Text('1.0x (സാധാരണ - Normal)',
+                          style: TextStyle(fontSize: 18))),
+                  PopupMenuItem(
+                      value: 1.25,
+                      child: Text('1.25x (വേഗത്തിൽ - Fast)',
+                          style: TextStyle(fontSize: 18))),
                 ],
                 child: Container(
                   height: 56,
@@ -99,7 +110,8 @@ class AudioControlWidget extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         '${speechRate}x',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

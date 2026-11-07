@@ -49,7 +49,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       isAuthenticated: success,
       isLoading: false,
-      errorMessage: success ? null : 'Invalid credentials. Please verify your email and password.',
+      errorMessage: success
+          ? null
+          : 'Invalid credentials. Please verify your email and password.',
     );
     return success;
   }
@@ -72,7 +74,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       isAuthenticated: success,
       isLoading: false,
-      errorMessage: success ? null : 'Registration failed. An account with this email may already exist.',
+      errorMessage: success
+          ? null
+          : 'Registration failed. An account with this email may already exist.',
     );
     return success;
   }

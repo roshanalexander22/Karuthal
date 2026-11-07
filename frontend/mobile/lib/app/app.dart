@@ -30,8 +30,8 @@ class SahaayiApp extends ConsumerWidget {
 
       // ── Theming ───────────────────────────────────────────────────────────
       theme: SahaayiTheme.lightTheme,
-      darkTheme: SahaayiTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      darkTheme: SahaayiTheme.lightTheme,
+      themeMode: ThemeMode.light,
 
       // ── Localisation ──────────────────────────────────────────────────────
       localizationsDelegates: const [

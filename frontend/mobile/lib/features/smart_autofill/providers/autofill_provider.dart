@@ -40,12 +40,12 @@ class AutofillProposal {
   }
 
   Map<String, dynamic> toJson() => {
-    'node_id': nodeId,
-    'profile_field_name': profileFieldName,
-    'proposed_value': proposedValue,
-    'confidence_score': confidenceScore,
-    'requires_user_confirmation': true,
-  };
+        'node_id': nodeId,
+        'profile_field_name': profileFieldName,
+        'proposed_value': proposedValue,
+        'confidence_score': confidenceScore,
+        'requires_user_confirmation': true,
+      };
 }
 
 enum AutofillStatus { initial, scanning, ready, injecting, success, error }
@@ -74,7 +74,8 @@ class AutofillState {
   }) {
     return AutofillState(
       status: status ?? this.status,
-      isAccessibilityActive: isAccessibilityActive ?? this.isAccessibilityActive,
+      isAccessibilityActive:
+          isAccessibilityActive ?? this.isAccessibilityActive,
       proposals: proposals ?? this.proposals,
       errorMessage: errorMessage,
       successMessage: successMessage,
@@ -117,7 +118,8 @@ class AutofillNotifier extends StateNotifier<AutofillState> {
         state = state.copyWith(
           status: AutofillStatus.error,
           isAccessibilityActive: false,
-          errorMessage: 'സഹായ സേവനം പ്രവർത്തനക്ഷമമല്ല. ക്രമീകരണങ്ങളിൽ ഇത് ഓൺ ചെയ്യുക.',
+          errorMessage:
+              'സഹായ സേവനം പ്രവർത്തനക്ഷമമല്ല. ക്രമീകരണങ്ങളിൽ ഇത് ഓൺ ചെയ്യുക.',
         );
         return;
       }
@@ -129,7 +131,8 @@ class AutofillNotifier extends StateNotifier<AutofillState> {
         state = state.copyWith(
           status: AutofillStatus.ready,
           proposals: [],
-          successMessage: 'സ്ക്രീനിൽ പൂരിപ്പിക്കാവുന്ന ഫോം ഫീൽഡുകൾ കണ്ടെത്തിയില്ല.',
+          successMessage:
+              'സ്ക്രീനിൽ പൂരിപ്പിക്കാവുന്ന ഫോം ഫീൽഡുകൾ കണ്ടെത്തിയില്ല.',
         );
         return;
       }
@@ -164,7 +167,8 @@ class AutofillNotifier extends StateNotifier<AutofillState> {
         data: {'fields': fieldPayloads},
       );
 
-      final matchesData = (res.data as Map<String, dynamic>)['matches'] as List<dynamic>? ?? [];
+      final matchesData =
+          (res.data as Map<String, dynamic>)['matches'] as List<dynamic>? ?? [];
       final proposals = matchesData
           .map((m) => AutofillProposal.fromJson(m as Map<String, dynamic>))
           .toList();
@@ -211,7 +215,8 @@ class AutofillNotifier extends StateNotifier<AutofillState> {
 
       state = state.copyWith(
         status: AutofillStatus.success,
-        successMessage: '$successCount ഫീൽഡുകൾ വിജയകരമായി പൂരിപ്പിച്ചു. ദയവായി പരിശോധിക്കുക.',
+        successMessage:
+            '$successCount ഫീൽഡുകൾ വിജയകരമായി പൂരിപ്പിച്ചു. ദയവായി പരിശോധിക്കുക.',
         proposals: [],
       );
     } catch (e) {
@@ -223,7 +228,8 @@ class AutofillNotifier extends StateNotifier<AutofillState> {
   }
 }
 
-final autofillProvider = StateNotifierProvider<AutofillNotifier, AutofillState>((ref) {
+final autofillProvider =
+    StateNotifierProvider<AutofillNotifier, AutofillState>((ref) {
   final client = ref.watch(apiClientProvider);
   return AutofillNotifier(client);
 });

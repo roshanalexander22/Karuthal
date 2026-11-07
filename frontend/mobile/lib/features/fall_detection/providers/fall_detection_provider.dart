@@ -5,9 +5,12 @@ class FallDetectionState {
   FallDetectionState({this.isMonitoring = true});
 }
 
-final fallDetectionProvider = StateNotifierProvider<FallNotifier, FallDetectionState>((ref) => FallNotifier());
+final fallDetectionProvider =
+    StateNotifierProvider<FallNotifier, FallDetectionState>(
+        (ref) => FallNotifier());
 
 class FallNotifier extends StateNotifier<FallDetectionState> {
   FallNotifier() : super(FallDetectionState());
-  void toggle() => state = FallDetectionState(isMonitoring: !state.isMonitoring);
+  void toggle() =>
+      state = FallDetectionState(isMonitoring: !state.isMonitoring);
 }

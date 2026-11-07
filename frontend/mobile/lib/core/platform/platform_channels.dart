@@ -15,19 +15,22 @@ import 'package:flutter/services.dart';
  *   - sahaayi/fall_events
  */
 class PlatformChannels {
-  static const MethodChannel accessibility = MethodChannel('sahaayi/accessibility');
+  static const MethodChannel accessibility =
+      MethodChannel('sahaayi/accessibility');
   static const MethodChannel autofill = MethodChannel('sahaayi/autofill');
   static const MethodChannel sensors = MethodChannel('sahaayi/sensors');
   static const MethodChannel tts = MethodChannel('sahaayi/tts');
   static const MethodChannel reminders = MethodChannel('sahaayi/reminders');
 
-  static const EventChannel sensorEvents = EventChannel('sahaayi/sensor_events');
+  static const EventChannel sensorEvents =
+      EventChannel('sahaayi/sensor_events');
   static const EventChannel fallEvents = EventChannel('sahaayi/fall_events');
 
   // --- Accessibility Service ---
   static Future<bool> isAccessibilityServiceActive() async {
     try {
-      final bool? active = await accessibility.invokeMethod<bool>('isAccessibilityServiceEnabled');
+      final bool? active = await accessibility
+          .invokeMethod<bool>('isAccessibilityServiceEnabled');
       return active ?? false;
     } catch (_) {
       return false;
@@ -42,7 +45,8 @@ class PlatformChannels {
 
   static Future<List<Map<dynamic, dynamic>>> requestScreenRead() async {
     try {
-      final List<dynamic>? elements = await accessibility.invokeListMethod('requestScreenRead');
+      final List<dynamic>? elements =
+          await accessibility.invokeListMethod('requestScreenRead');
       if (elements == null) return [];
       return elements.cast<Map<dynamic, dynamic>>();
     } catch (_) {
@@ -52,7 +56,8 @@ class PlatformChannels {
 
   static Future<bool> injectFieldValue(String nodeId, String value) async {
     try {
-      final bool? success = await accessibility.invokeMethod<bool>('injectFieldValue', {
+      final bool? success =
+          await accessibility.invokeMethod<bool>('injectFieldValue', {
         'nodeId': nodeId,
         'value': value,
       });
@@ -65,7 +70,8 @@ class PlatformChannels {
   // --- Autofill Framework ---
   static Future<bool> isAutofillSupported() async {
     try {
-      final bool? supported = await autofill.invokeMethod<bool>('isAutofillSupported');
+      final bool? supported =
+          await autofill.invokeMethod<bool>('isAutofillSupported');
       return supported ?? false;
     } catch (_) {
       return false;
@@ -85,8 +91,10 @@ class PlatformChannels {
     } catch (_) {}
   }
 
-  static Stream<dynamic> get sensorEventsStream => sensorEvents.receiveBroadcastStream();
-  static Stream<dynamic> get fallEventsStream => fallEvents.receiveBroadcastStream();
+  static Stream<dynamic> get sensorEventsStream =>
+      sensorEvents.receiveBroadcastStream();
+  static Stream<dynamic> get fallEventsStream =>
+      fallEvents.receiveBroadcastStream();
 
   // --- Exact Alarm Reminders ---
   static Future<bool> scheduleExactReminder({
@@ -96,7 +104,8 @@ class PlatformChannels {
     required int triggerAtMillis,
   }) async {
     try {
-      final bool? ok = await reminders.invokeMethod<bool>('scheduleExactReminder', {
+      final bool? ok =
+          await reminders.invokeMethod<bool>('scheduleExactReminder', {
         'reminderId': reminderId,
         'title': title,
         'message': message,

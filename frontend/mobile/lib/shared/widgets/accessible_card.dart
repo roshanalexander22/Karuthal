@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app/theme.dart';
 
 /// An accessible card container with strong border definition, high-contrast surface,
 /// large padding, and optional tap action with haptics.
@@ -9,6 +10,7 @@ class AccessibleCard extends StatelessWidget {
   final Color? backgroundColor;
   final EdgeInsetsGeometry padding;
   final double elevation;
+  final BorderSide? border;
 
   const AccessibleCard({
     super.key,
@@ -17,25 +19,30 @@ class AccessibleCard extends StatelessWidget {
     this.semanticLabel,
     this.backgroundColor,
     this.padding = const EdgeInsets.all(20.0),
-    this.elevation = 3.0,
+    this.elevation = 1.0,
+    this.border,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final effectiveBorder = border ??
+        const BorderSide(
+          color: SahaayiColors.border,
+          width: 1.2,
+        );
+
     final cardContent = Card(
       elevation: elevation,
-      color: backgroundColor ?? theme.cardColor,
+      color: backgroundColor ?? SahaayiColors.card,
+      shadowColor: const Color(0x10000000),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-        side: BorderSide(
-          color: theme.colorScheme.outline.withAlpha(80),
-          width: 1.5,
-        ),
+        borderRadius: BorderRadius.circular(20.0),
+        side: effectiveBorder,
       ),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(20.0),
         child: Padding(
           padding: padding,
           child: child,

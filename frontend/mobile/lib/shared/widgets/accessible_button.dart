@@ -57,7 +57,8 @@ class AccessibleButton extends StatelessWidget {
                 width: 1.5,
               ),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           ),
           onPressed: onPressed == null || isLoading
               ? null

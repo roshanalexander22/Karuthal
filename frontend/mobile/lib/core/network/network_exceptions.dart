@@ -44,7 +44,8 @@ class ForbiddenException extends NetworkException {
   const ForbiddenException({
     String? message,
   }) : super(
-          message: message ?? 'You do not have permission to perform this action.',
+          message:
+              message ?? 'You do not have permission to perform this action.',
           statusCode: 403,
         );
 }

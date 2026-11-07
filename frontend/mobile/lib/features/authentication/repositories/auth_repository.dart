@@ -24,10 +24,12 @@ class AuthRepository {
         final access = data['access_token'] as String?;
         final refresh = data['refresh_token'] as String?;
         if (access != null) {
-          await _storage.write(key: AppConstants.prefKeyAccessToken, value: access);
+          await _storage.write(
+              key: AppConstants.prefKeyAccessToken, value: access);
         }
         if (refresh != null) {
-          await _storage.write(key: AppConstants.prefKeyRefreshToken, value: refresh);
+          await _storage.write(
+              key: AppConstants.prefKeyRefreshToken, value: refresh);
         }
         return true;
       }
@@ -63,10 +65,12 @@ class AuthRepository {
           final access = tokens['access_token'] as String?;
           final refresh = tokens['refresh_token'] as String?;
           if (access != null) {
-            await _storage.write(key: AppConstants.prefKeyAccessToken, value: access);
+            await _storage.write(
+                key: AppConstants.prefKeyAccessToken, value: access);
           }
           if (refresh != null) {
-            await _storage.write(key: AppConstants.prefKeyRefreshToken, value: refresh);
+            await _storage.write(
+                key: AppConstants.prefKeyRefreshToken, value: refresh);
           }
         }
         return true;
