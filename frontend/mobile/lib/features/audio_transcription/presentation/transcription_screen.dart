@@ -12,7 +12,7 @@ class TranscriptionScreen extends StatefulWidget {
 
 class _TranscriptionScreenState extends State<TranscriptionScreen> {
   bool _isRecording = false;
-  String _transcript =
+  final String _transcript =
       'ഡോക്ടർ പറഞ്ഞത്: ദിവസവും രാവിലെ ഭക്ഷണത്തിന് ശേഷം ഒരു പ്രഷറിന്റെ ഗുളിക കഴിക്കണം. ഉച്ചയ്ക്ക് ആഹാരം കഴിഞ്ഞ ഉടൻ വിശ്രമിക്കുക.';
 
   void _toggleRecording() {

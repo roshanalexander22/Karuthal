@@ -233,3 +233,6 @@ final autofillProvider =
   final client = ref.watch(apiClientProvider);
   return AutofillNotifier(client);
 });
+
+// Alias for backward compatibility
+final autofillNotifierProvider = autofillProvider;

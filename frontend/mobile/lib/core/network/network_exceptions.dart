@@ -122,7 +122,7 @@ class ParseException extends NetworkException {
 
 /// Thrown for file upload failures (size/type validation, write errors).
 class UploadException extends NetworkException {
-  const UploadException({required String message}) : super(message: message);
+  const UploadException({required super.message});
 }
 
 // ── Extension helpers ─────────────────────────────────────────────────────────

@@ -184,7 +184,10 @@ abstract final class SahaayiTheme {
             TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         unselectedLabelStyle:
             TextStyle(fontSize: 13, fontWeight: FontWeight.normal),
+        selectedIconTheme: IconThemeData(size: 28),
+        unselectedIconTheme: IconThemeData(size: 28),
         type: BottomNavigationBarType.fixed,
+        showUnselectedLabels: true,
         elevation: 8,
       ),
     );

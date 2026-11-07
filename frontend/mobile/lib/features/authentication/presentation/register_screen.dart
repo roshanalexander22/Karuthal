@@ -104,8 +104,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
                   validator: (v) {
-                    if (v == null || !v.contains('@'))
+                    if (v == null || !v.contains('@')) {
                       return 'സാധുവായ ഇമെയിൽ നൽകുക';
+                    }
                     return null;
                   },
                 ),
@@ -132,8 +133,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   validator: (v) {
-                    if (v == null || v.length < 8)
+                    if (v == null || v.length < 8) {
                       return 'പാസ്‌വേഡ് കുറഞ്ഞത് 8 അക്ഷരങ്ങൾ വേണം';
+                    }
                     return null;
                   },
                 ),

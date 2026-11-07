@@ -95,7 +95,7 @@ class DocumentListScreen extends ConsumerWidget {
               itemCount: docs.length,
               itemBuilder: (context, i) {
                 final doc = docs[i];
-                final isVerified = doc['status'] == 'VERIFIED';
+                final isVerified = doc.ocrStatus == 'COMPLETED';
 
                 return AccessibleCard(
                   onTap: () {
@@ -119,7 +119,7 @@ class DocumentListScreen extends ConsumerWidget {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    doc['name']?.toString() ?? 'Document',
+                                    doc.originalFilename,
                                     style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
@@ -128,10 +128,26 @@ class DocumentListScreen extends ConsumerWidget {
                               ],
                             ),
                             const Divider(height: 28),
-                            Text('വിഭാഗം (Category): ${doc['category']}'),
+                            Text('വിഭാഗം (Category): ${doc.documentCategory}'),
                             const SizedBox(height: 8),
                             Text(
                                 'സ്ഥിതി (Status): ${isVerified ? "പരിശോധിച്ചുറപ്പിച്ചു" : "പരിശോധനയിൽ"}'),
+                            if (doc.extractedText != null &&
+                                doc.extractedText!.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              const Text(
+                                'കണ്ടെത്തിയ വിവരങ്ങൾ:',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                doc.extractedText!,
+                                style: const TextStyle(
+                                    fontSize: 14,
+                                    color: SahaayiColors.textSecondary),
+                              ),
+                            ],
                             const SizedBox(height: 24),
                             SizedBox(
                               width: double.infinity,
@@ -158,7 +174,7 @@ class DocumentListScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
-                          doc['category'] == 'PRESCRIPTION'
+                          doc.documentCategory == 'PRESCRIPTION'
                               ? Icons.medical_services_rounded
                               : Icons.badge_rounded,
                           color: isVerified
@@ -173,7 +189,7 @@ class DocumentListScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              doc['name']?.toString() ?? 'രേഖ',
+                              doc.originalFilename,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -182,7 +198,7 @@ class DocumentListScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'വിഭാഗം: ${doc['category']}',
+                              'വിഭാഗം: ${doc.documentCategory}',
                               style: const TextStyle(
                                   fontSize: 14,
                                   color: SahaayiColors.textSecondary),
