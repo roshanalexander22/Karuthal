@@ -6,10 +6,11 @@ class AppConfig {
 
   static String get apiBaseUrl {
     if (kIsWeb) {
-      return 'http://127.0.0.1:8000/api/v1';
+      final host = Uri.base.host.isNotEmpty ? Uri.base.host : 'localhost';
+      return 'http://$host:8000';
     }
     // Android emulator loopback alias
-    return 'http://10.0.2.2:8000/api/v1';
+    return 'http://10.0.2.2:8000';
   }
 
   static const int connectTimeoutSeconds = 15;
