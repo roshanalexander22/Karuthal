@@ -2,6 +2,10 @@
 
 Base URL: `https://api.sahaayi.internal/api/v1` (Production) or `http://localhost:8000/api/v1` (Local Dev)
 
+### Health Check Endpoints
+- `GET http://localhost:8000/health`: Service liveness probe.
+- `GET http://localhost:8000/api/v1/health`: API v1 router readiness probe.
+
 All authenticated endpoints require the header:
 ```http
 Authorization: Bearer <jwt_access_token>
@@ -97,7 +101,27 @@ Retrieve all verified personal profile fields.
       "is_verified": true,
       "confidence_score": 0.95
     }
+### POST `/autofill/confirm`
+Record user confirmation and write compliance audit log before Android field injection.
+```json
+// Request
+{
+  "confirmed_matches": [
+    {
+      "node_id": "txt_name",
+      "profile_field_name": "full_name",
+      "proposed_value": "Madhavan Nair",
+      "confidence_score": 0.96,
+      "requires_user_confirmation": true
+    }
   ]
+}
+
+// Response (200 OK)
+{
+  "status": "SUCCESS",
+  "message": "Autofill confirmed and recorded in compliance audit log.",
+  "fields_confirmed": 1
 }
 ```
 
@@ -134,7 +158,27 @@ Match inspected screen form field labels to verified profile fields.
       "confidence_score": 0.92,
       "requires_user_confirmation": true
     }
+### POST `/autofill/confirm`
+Record user confirmation and write compliance audit log before Android field injection.
+```json
+// Request
+{
+  "confirmed_matches": [
+    {
+      "node_id": "txt_name",
+      "profile_field_name": "full_name",
+      "proposed_value": "Madhavan Nair",
+      "confidence_score": 0.96,
+      "requires_user_confirmation": true
+    }
   ]
+}
+
+// Response (200 OK)
+{
+  "status": "SUCCESS",
+  "message": "Autofill confirmed and recorded in compliance audit log.",
+  "fields_confirmed": 1
 }
 ```
 

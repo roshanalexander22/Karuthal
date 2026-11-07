@@ -1,9 +1,10 @@
 from __future__ import annotations
 from fastapi import APIRouter, Depends, status
 from uuid import UUID
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.dependencies import get_current_user, get_db
+from app.core.dependencies import get_current_active_user, get_db
 from app.modules.emergency.schemas import (
     EmergencyTriggerRequest,
     EmergencyTriggerResponse,
@@ -19,15 +20,17 @@ router = APIRouter()
 def _extract_user_id(user) -> UUID:
     if hasattr(user, "id"):
         return user.id if isinstance(user.id, UUID) else UUID(str(user.id))
-    sub = user.get("sub") if isinstance(user, dict) else str(user)
-    return UUID(str(sub))
+    if isinstance(user, dict):
+        val = user.get("sub") or user.get("id")
+        return UUID(str(val))
+    return UUID(str(user))
 
 
 @router.post("/trigger", response_model=EmergencyTriggerResponse, status_code=status.HTTP_200_OK)
 @router.post("/sos", response_model=EmergencyTriggerResponse, status_code=status.HTTP_200_OK)
 async def trigger_emergency_sos(
     payload: EmergencyTriggerRequest,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Trigger high-priority Emergency SOS alert to registered caregivers."""
@@ -37,7 +40,7 @@ async def trigger_emergency_sos(
 
 @router.get("/contacts", response_model=EmergencyContactListResponse)
 async def get_emergency_contacts(
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """List designated caregiver and family emergency contacts."""
@@ -49,7 +52,7 @@ async def get_emergency_contacts(
 @router.post("/contacts", response_model=EmergencyContactResponse, status_code=status.HTTP_201_CREATED)
 async def add_emergency_contact(
     payload: EmergencyContactCreate,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Add a new emergency contact."""

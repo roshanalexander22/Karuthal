@@ -1,66 +1,69 @@
 import pytest
 import uuid
-from httpx import AsyncClient, ASGITransport
-from app.main import app
-from app.core.dependencies import get_current_user, get_db
-
-dummy_user_id = uuid.uuid4()
-
-async def mock_get_current_user():
-    return {"sub": str(dummy_user_id), "role": "USER"}
-
-async def mock_get_db():
-    class DummyDB:
-        async def commit(self): pass
-        async def rollback(self): pass
-        async def close(self): pass
-        async def execute(self, *args, **kwargs): return None
-    yield DummyDB()
-
-@pytest.fixture(autouse=True)
-def override_deps():
-    app.dependency_overrides[get_current_user] = mock_get_current_user
-    app.dependency_overrides[get_db] = mock_get_db
-    yield
-    app.dependency_overrides.clear()
 
 @pytest.mark.asyncio
-async def test_smart_autofill_security_and_flow():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-        # 1. Match Form Fields (including a forbidden password field)
-        payload = {
+async def test_smart_autofill_matching_and_confirmation(async_client):
+    email = f"autofill_user_{uuid.uuid4().hex[:8]}@sahaayi.in"
+    password = "AutofillPassword123!"
+
+    # 1. Register & login
+    await async_client.post(
+        "/api/v1/auth/register",
+        json={"email": email, "password": password, "full_name": "Autofill Elder"},
+    )
+    login_res = await async_client.post(
+        "/api/v1/auth/login",
+        json={"email": email, "password": password},
+    )
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 2. Add verified profile fields
+    await async_client.patch(
+        "/api/v1/profile",
+        headers=headers,
+        json={"field_name": "full_name", "field_value": "Kalyani Amma", "is_verified": True},
+    )
+    await async_client.patch(
+        "/api/v1/profile",
+        headers=headers,
+        json={"field_name": "phone_number", "field_value": "+919847112233", "is_verified": True},
+    )
+
+    # 3. Match form fields (English + Malayalam synonyms)
+    match_res = await async_client.post(
+        "/api/v1/autofill/match",
+        headers=headers,
+        json={
             "fields": [
-                {"node_id": "f_1", "label": "അപേക്ഷകന്റെ പേര് (Applicant Name)", "input_type": "text"},
-                {"node_id": "f_2", "label": "ജനന തീയതി (Date of Birth)", "input_type": "text"},
-                {"node_id": "f_3", "label": "മേൽവിലാസം (Address)", "input_type": "text"},
-                {"node_id": "f_4", "label": "രഹസ്യവാക്ക് (Password)", "input_type": "password", "is_password_or_sensitive": True},
-                {"node_id": "f_5", "label": "Enter Bank OTP", "input_type": "number"}
+                {"node_id": "field_name_01", "label": "Full Name", "input_type": "text", "is_password_or_sensitive": False},
+                {"node_id": "field_ml_phone", "label": "ഫോൺ നമ്പർ", "input_type": "tel", "is_password_or_sensitive": False},
+                {"node_id": "field_pwd", "label": "Password", "input_type": "password", "is_password_or_sensitive": True},
+                {"node_id": "field_otp", "label": "Enter OTP", "input_type": "text", "is_password_or_sensitive": False},
             ]
-        }
-        res = await client.post("/api/v1/autofill/match", json=payload)
-        assert res.status_code == 200
-        matches = res.json()["matches"]
+        },
+    )
+    assert match_res.status_code == 200
+    matches = match_res.json()["matches"]
 
-        # Verify matched fields
-        matched_nodes = [m["node_id"] for m in matches]
-        assert "f_1" in matched_nodes  # Name
-        assert "f_2" in matched_nodes  # DOB
-        assert "f_3" in matched_nodes  # Address
+    # Must match name and phone, strictly rejecting password and OTP
+    matched_nodes = {m["node_id"]: m for m in matches}
+    assert "field_name_01" in matched_nodes
+    assert matched_nodes["field_name_01"]["proposed_value"] == "Kalyani Amma"
+    assert "field_ml_phone" in matched_nodes
+    assert matched_nodes["field_ml_phone"]["proposed_value"] == "+919847112233"
 
-        # STRICT PRIVACY: Password and OTP fields must NEVER be matched!
-        assert "f_4" not in matched_nodes
-        assert "f_5" not in matched_nodes
+    # Strictly forbidden
+    assert "field_pwd" not in matched_nodes
+    assert "field_otp" not in matched_nodes
 
-        # All proposals require explicit user confirmation
-        for m in matches:
-            assert m["requires_user_confirmation"] is True
-            assert m["proposed_value"] is not None
-
-        # 2. Confirm Autofill (Audit Log)
-        confirm_payload = {
-            "confirmed_matches": matches
-        }
-        confirm_res = await client.post("/api/v1/autofill/confirm", json=confirm_payload)
-        assert confirm_res.status_code == 200
-        assert confirm_res.json()["status"] == "SUCCESS"
-        assert confirm_res.json()["fields_confirmed"] == len(matches)
+    # 4. Confirm autofill and verify audit logging
+    confirm_res = await async_client.post(
+        "/api/v1/autofill/confirm",
+        headers=headers,
+        json={"confirmed_matches": [matched_nodes["field_name_01"]]},
+    )
+    assert confirm_res.status_code == 200
+    confirm_data = confirm_res.json()
+    assert confirm_data["status"] == "SUCCESS"
+    assert confirm_data["fields_confirmed"] == 1

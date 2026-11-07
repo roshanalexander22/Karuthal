@@ -25,6 +25,15 @@ from app.modules.voice.router import router as voice_router
 # Root router for v1 — all routes here are mounted under /api/v1 by main.py
 api_router = APIRouter()
 
+@api_router.get("/health", tags=["System"], summary="API v1 Health check")
+async def v1_health_check() -> dict:
+    """Returns 200 OK when API v1 router is active."""
+    return {
+        "status": "ok",
+        "api_version": "v1",
+        "app": "Sahaayi API",
+    }
+
 api_router.include_router(auth_router,          prefix="/auth",           tags=["Authentication"])
 api_router.include_router(documents_router,     prefix="/documents",      tags=["Documents"])
 api_router.include_router(profile_router,       prefix="/profile",        tags=["Personal Memory"])

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 import httpx
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from uuid import UUID, uuid4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,8 +30,8 @@ class PersonalMemoryService:
     async def get_profile(
         cls,
         user_id: UUID,
-        verified_only: bool = False,
-        db: Optional[AsyncSession] = None
+        db: Optional[AsyncSession] = None,
+        verified_only: bool = False
     ) -> UserProfileResponse:
         fields: List[ProfileFieldItem] = []
 
@@ -80,7 +80,7 @@ class PersonalMemoryService:
         db: Optional[AsyncSession] = None
     ) -> Dict[str, str]:
         """Return a clean dictionary of key -> value strictly for USER-VERIFIED fields."""
-        profile = await cls.get_profile(user_id=user_id, verified_only=True, db=db)
+        profile = await cls.get_profile(user_id=user_id, db=db, verified_only=True)
         return {f.field_name: f.field_value for f in profile.fields if f.is_verified}
 
     @classmethod
@@ -91,7 +91,7 @@ class PersonalMemoryService:
         db: Optional[AsyncSession] = None
     ) -> ProfileFieldItem:
         """Add or update a personal profile field."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         field_item = ProfileFieldItem(
             field_name=payload.field_name,
             field_value=payload.field_value,
@@ -115,32 +115,43 @@ class PersonalMemoryService:
                     ProfileField.user_id == user_id,
                     ProfileField.field_name == payload.field_name
                 )
-                res = await db.execute(stmt)
-                existing = res.scalar_one_or_none()
-                if existing:
-                    existing.field_value = payload.field_value
-                    existing.field_type = payload.field_type
-                    existing.is_verified = payload.is_verified
-                    existing.confidence_score = payload.confidence_score
-                    existing.source_document_id = payload.source_document_id
-                    existing.updated_at = now
+                result = await db.execute(stmt)
+                db_field = result.scalars().first()
+
+                if db_field:
+                    db_field.field_value = payload.field_value
+                    db_field.is_verified = payload.is_verified
+                    db_field.field_type = payload.field_type or db_field.field_type
+                    db_field.confidence_score = payload.confidence_score
+                    db_field.source_document_id = payload.source_document_id
                 else:
-                    new_field = ProfileField(
+                    db_field = ProfileField(
                         id=uuid4(),
                         user_id=user_id,
                         field_name=payload.field_name,
                         field_value=payload.field_value,
-                        field_type=payload.field_type,
+                        field_type=payload.field_type or "TEXT",
                         is_verified=payload.is_verified,
                         confidence_score=payload.confidence_score,
-                        source_document_id=payload.source_document_id,
-                        created_at=now,
-                        updated_at=now
+                        source_document_id=payload.source_document_id
                     )
-                    db.add(new_field)
+                    db.add(db_field)
+
                 await db.commit()
+                await db.refresh(db_field)
+
+                return ProfileFieldItem(
+                    field_name=db_field.field_name,
+                    field_value=db_field.field_value,
+                    field_type=db_field.field_type,
+                    is_verified=db_field.is_verified,
+                    confidence_score=db_field.confidence_score,
+                    source_document_id=db_field.source_document_id,
+                    created_at=db_field.created_at,
+                    updated_at=db_field.updated_at
+                )
             except Exception as exc:
-                logger.debug("Database write profile field fallback: %s", exc)
+                logger.debug("Database profile update fallback: %s", exc)
 
         return field_item
 
@@ -151,47 +162,55 @@ class PersonalMemoryService:
         payload: FieldVerificationPayload,
         db: Optional[AsyncSession] = None
     ) -> Optional[ProfileFieldItem]:
-        """Verify or promote a draft field to USER-VERIFIED."""
-        now = datetime.utcnow()
-        existing_val: Optional[str] = None
+        """Promote a draft entity to USER-VERIFIED status."""
+        target_name = payload.field_name
+        now = datetime.now(timezone.utc)
 
-        if user_id in _in_memory_profile_fields and payload.field_name in _in_memory_profile_fields[user_id]:
-            item = _in_memory_profile_fields[user_id][payload.field_name]
-            item.is_verified = payload.is_verified
-            if payload.edited_value:
-                item.field_value = payload.edited_value
-            item.updated_at = now
-            existing_val = item.field_value
+        # 1. Update in memory
+        if user_id in _in_memory_profile_fields and target_name in _in_memory_profile_fields[user_id]:
+            existing = _in_memory_profile_fields[user_id][target_name]
+            updated_val = payload.updated_value if payload.updated_value is not None else existing.field_value
+            updated = ProfileFieldItem(
+                field_name=target_name,
+                field_value=updated_val,
+                field_type=existing.field_type,
+                is_verified=payload.is_verified,
+                confidence_score=1.0,  # 100% confidence once verified by user
+                source_document_id=existing.source_document_id,
+                created_at=existing.created_at,
+                updated_at=now
+            )
+            _in_memory_profile_fields[user_id][target_name] = updated
+            return updated
 
+        # 2. Update in DB if session
         if db is not None:
             try:
                 stmt = select(ProfileField).where(
                     ProfileField.user_id == user_id,
-                    ProfileField.field_name == payload.field_name
+                    ProfileField.field_name == target_name
                 )
-                res = await db.execute(stmt)
-                existing = res.scalar_one_or_none()
-                if existing:
-                    existing.is_verified = payload.is_verified
-                    if payload.edited_value:
-                        existing.field_value = payload.edited_value
-                    existing.updated_at = now
+                result = await db.execute(stmt)
+                db_field = result.scalars().first()
+                if db_field:
+                    if payload.updated_value is not None:
+                        db_field.field_value = payload.updated_value
+                    db_field.is_verified = payload.is_verified
+                    db_field.confidence_score = 1.0
                     await db.commit()
+                    await db.refresh(db_field)
                     return ProfileFieldItem(
-                        field_name=existing.field_name,
-                        field_value=existing.field_value,
-                        field_type=existing.field_type,
-                        is_verified=existing.is_verified,
-                        confidence_score=existing.confidence_score,
-                        source_document_id=existing.source_document_id,
-                        created_at=existing.created_at,
-                        updated_at=existing.updated_at
+                        field_name=db_field.field_name,
+                        field_value=db_field.field_value,
+                        field_type=db_field.field_type,
+                        is_verified=db_field.is_verified,
+                        confidence_score=db_field.confidence_score,
+                        source_document_id=db_field.source_document_id,
+                        created_at=db_field.created_at,
+                        updated_at=db_field.updated_at
                     )
             except Exception as exc:
-                logger.debug("Database verify field fallback: %s", exc)
-
-        if user_id in _in_memory_profile_fields and payload.field_name in _in_memory_profile_fields[user_id]:
-            return _in_memory_profile_fields[user_id][payload.field_name]
+                logger.debug("Database profile verify fallback: %s", exc)
 
         return None
 
@@ -202,9 +221,13 @@ class PersonalMemoryService:
         field_name: str,
         db: Optional[AsyncSession] = None
     ) -> bool:
-        """Remove a field from the personal memory store."""
-        if user_id in _in_memory_profile_fields and field_name in _in_memory_profile_fields[user_id]:
-            del _in_memory_profile_fields[user_id][field_name]
+        """Remove a field from the personal memory bank."""
+        deleted = False
+
+        if user_id in _in_memory_profile_fields:
+            if field_name in _in_memory_profile_fields[user_id]:
+                del _in_memory_profile_fields[user_id][field_name]
+                deleted = True
 
         if db is not None:
             try:
@@ -214,10 +237,11 @@ class PersonalMemoryService:
                 )
                 await db.execute(stmt)
                 await db.commit()
+                deleted = True
             except Exception as exc:
-                logger.debug("Database delete field fallback: %s", exc)
+                logger.debug("Database delete fallback: %s", exc)
 
-        return True
+        return deleted
 
     @classmethod
     async def import_draft_from_document(

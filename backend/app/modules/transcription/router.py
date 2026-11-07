@@ -1,11 +1,13 @@
 from __future__ import annotations
 from fastapi import APIRouter, Depends, UploadFile, File, Form, status, HTTPException
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.dependencies import get_current_user, get_db
+from app.core.dependencies import get_current_active_user, get_db
 from app.modules.transcription.schemas import (
+    TranscriptionSessionResponse,
+    TranscriptionUploadResponse,
     TranscriptionResultResponse,
     TranscriptionListResponse,
     TranscriptionSummarizeRequest
@@ -18,15 +20,23 @@ router = APIRouter()
 def _extract_user_id(user) -> UUID:
     if hasattr(user, "id"):
         return user.id if isinstance(user.id, UUID) else UUID(str(user.id))
-    sub = user.get("sub") if isinstance(user, dict) else str(user)
-    return UUID(str(sub))
+    if isinstance(user, dict):
+        val = user.get("sub") or user.get("id")
+        return UUID(str(val))
+    return UUID(str(user))
+
+
+@router.post("/start", response_model=TranscriptionSessionResponse)
+async def start_session(current_user = Depends(get_current_active_user)):
+    user_id = _extract_user_id(current_user)
+    return await TranscriptionService.start_session(user_id)
 
 
 @router.post("/upload", response_model=TranscriptionResultResponse, status_code=status.HTTP_201_CREATED)
 async def upload_audio(
     file: UploadFile = File(...),
     language: str = Form("ml"),
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Upload audio file for ASR transcription, segmentation, and automated summarization."""
@@ -36,7 +46,7 @@ async def upload_audio(
 
 @router.get("", response_model=TranscriptionListResponse)
 async def list_transcriptions(
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """List past audio transcription sessions."""
@@ -48,7 +58,7 @@ async def list_transcriptions(
 @router.get("/{transcription_id}", response_model=TranscriptionResultResponse)
 async def get_transcription(
     transcription_id: UUID,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get details of a transcription session."""
@@ -62,7 +72,7 @@ async def get_transcription(
 @router.post("/{transcription_id}/summarize", response_model=TranscriptionResultResponse)
 async def summarize_transcription(
     transcription_id: UUID,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Generate or refresh structured summary from the transcript."""
@@ -76,7 +86,7 @@ async def summarize_transcription(
 @router.delete("/{transcription_id}", status_code=status.HTTP_200_OK)
 async def delete_transcription(
     transcription_id: UUID,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Delete a transcription session."""

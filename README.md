@@ -13,26 +13,33 @@
 
 ## 📖 Table of Contents
 1. [Overview](#-overview)
-2. [Target Audience & Problem Statement](#-target-audience--problem-statement)
-3. [Full System Architecture](#-full-system-architecture)
+2. [Feature Implementation Status](#-feature-implementation-status)
+3. [Target Audience & Problem Statement](#-target-audience--problem-statement)
+4. [Full System Architecture](#-full-system-architecture)
    - [Architectural Topology](#architectural-topology)
    - [Subsystem Breakdown](#subsystem-breakdown)
    - [Component Communication Protocols](#component-communication-protocols)
-4. [Core Features & Technical Workflows](#-core-features--technical-workflows)
+5. [Core Features & Technical Workflows](#-core-features--technical-workflows)
    - [Feature 1: Malayalam TTS & Screen Reading](#feature-1-malayalam-tts--screen-reading)
    - [Feature 2: OCR Document Reader & Verified Personal Memory](#feature-2-ocr-document-reader--verified-personal-memory)
    - [Feature 3: Medicine & Appointment Management](#feature-3-medicine--appointment-management)
    - [Feature 4: Intelligent Screen Understanding & Smart Autofill](#feature-4-intelligent-screen-understanding--smart-autofill)
    - [Feature 5: Low-Latency Audio Transcription & Summarization](#feature-5-low-latency-audio-transcription--summarization)
    - [Feature 6: Proactive Fall & Distress Monitoring](#feature-6-proactive-fall--distress-monitoring)
-5. [Privacy, Security & Non-Negotiable Boundaries](#-privacy-security--non-negotiable-boundaries)
-6. [Repository Structure](#-repository-structure)
-7. [API Contract Matrix](#-api-contract-matrix)
-8. [Two-Developer Team Organization & Git Workflow](#-two-developer-team-organization--git-workflow)
-9. [Setup & Installation](#-setup--installation)
-10. [Testing & CI/CD Pipelines](#-testing--cicd-pipelines)
-11. [Dependencies & Licenses](#-dependencies--licenses)
-12. [Roadmap](#-roadmap)
+6. [Privacy, Security & Non-Negotiable Boundaries](#-privacy-security--non-negotiable-boundaries)
+7. [Repository Structure](#-repository-structure)
+8. [API Contract Matrix](#-api-contract-matrix)
+9. [Two-Developer Team Organization & Git Workflow](#-two-developer-team-organization--git-workflow)
+10. [Setup & Installation](#-setup--installation)
+    - [Environment Configuration](#environment-configuration)
+    - [Database Setup & Migrations](#database-setup--migrations)
+    - [Backend Setup](#backend-setup)
+    - [AI Engine Setup](#ai-engine-setup)
+    - [Flutter & Android Client Setup](#flutter--android-client-setup)
+11. [Testing & CI/CD Pipelines](#-testing--cicd-pipelines)
+12. [Dependencies & Licenses](#-dependencies--licenses)
+13. [Known Limitations](#-known-limitations)
+14. [Roadmap](#-roadmap)
 
 ---
 
@@ -41,6 +48,43 @@
 **Sahaayi** (Malayalam: **സഹായി**, meaning *"Helper"* or *"Companion"*) is an intelligent, voice-first AI assistance and accessibility platform designed for senior citizens and individuals with accessibility challenges.
 
 By bridging modern mobile accessibility frameworks, regional Indian language speech models (primarily **Malayalam**, alongside **English**), optical document intelligence, and privacy-preserving automation, Sahaayi restores digital independence to senior citizens navigating bureaucratic paperwork, healthcare routines, daily communications, and emergency situations.
+
+---
+
+## 📊 Feature Implementation Status
+
+> **Last Updated**: November 7, 2026  
+> **Repository Baseline**: Commit `8ccd2a0` (Merged into `develop` & `main`)  
+> **System Verification**: 14 / 14 Automated Checks Passing (`scripts/verify_all.py`)
+
+| Feature / Subsystem | Status | Owner | Verification Evidence |
+|---|---|---|---|
+| **Repository Architecture & Git Governance** | **COMPLETED & VERIFIED** | Member 1 | 14 feature branches, clean trees, branch rules enforced. |
+| **Backend Core Framework (FastAPI)** | **COMPLETED & VERIFIED** | Member 1 | Lifespan, CORS, logging, `/health` and `/api/v1/health` 200 OK. |
+| **JWT Authentication & Password Hashing** | **COMPLETED & VERIFIED** | Member 1 | Live registration, login, refresh, `/auth/me`, native bcrypt (12 rounds). |
+| **Relational Database (SQLAlchemy 2.0)** | **COMPLETED & VERIFIED** | Member 1 | 12 tables, UUID PKs, SQLite dev + PostgreSQL 15 async engines. |
+| **Alembic Database Migrations** | **COMPLETED & VERIFIED** | Member 1 | Migration `001_initial_schema.py` executed cleanly, seed script verified. |
+| **Shared API Contracts & Schemas** | **COMPLETED & VERIFIED** | Member 1 | OpenAPI 3.1 YAML (25 endpoints), 31 JSON schemas, shared constants. |
+| **Flutter Mobile Core Infrastructure** | **COMPLETED & VERIFIED** | Member 1 | Dio `ApiClient`, JWT interceptor, `FlutterSecureStorage`, GoRouter. |
+| **Flutter Accessible UI Components** | **COMPLETED & VERIFIED** | Member 1 | `AccessibleButton` (56dp min), `AccessibleTextField`, `AccessibleCard`, haptics. |
+| **Flutter Static Analysis & Tests** | **COMPLETED & VERIFIED** | Member 1 | `flutter analyze` (0 issues), widget test suite passing. |
+| **Android Platform Channel Bridge** | **COMPLETED & VERIFIED** | Member 1 | `FlutterChannelBridge.kt`, 5 MethodChannels, 2 EventChannels. |
+| **Android Accessibility Service Foundation**| **COMPLETED & VERIFIED** | Member 1 | UI node traversal, sensitive field filter, `injectFieldValue` bridge. |
+| **Android Autofill Framework Service** | **COMPLETED & VERIFIED** | Member 1 | `SahaayiAutofillService.kt` for Android 8.0+ autofill framework. |
+| **Android Exact Alarm Reminders Bridge** | **COMPLETED & VERIFIED** | Member 1 | `ReminderNotificationService.kt` (AlarmManager) & `ReminderReceiver`. |
+| **Smart Autofill Integration** | **COMPLETED & VERIFIED** | Joint | Semantic matcher (Malayalam/English), security filter, Flutter provider & UI. |
+| **Personal Memory Bank (API & DB Engine)** | **COMPLETED & VERIFIED** | Member 1 / Member 2 | Database CRUD, verification flags, and endpoints tested; OCR sync in progress. |
+| **AI Engine Microservice Foundation** | **COMPLETED & VERIFIED** | Member 1 / Member 2 | FastAPI (:8001) live healthcheck 200 OK, pytest suite passes. |
+| **Automated Verification Harness** | **COMPLETED & VERIFIED** | Member 1 | `scripts/verify_all.py` (14 automated checks covering all tiers). |
+| **CI/CD Pipelines (GitHub Actions)** | **COMPLETED & VERIFIED** | Member 1 | `backend-ci.yml`, `frontend-ci.yml`, `ai-engine-ci.yml` targeting `main`/`develop`. |
+| **Member 2 Integration & Onboarding** | **COMPLETED & VERIFIED** | Member 1 | `docs/MEMBER_2_ONBOARDING.md` & `docs/member-2-onboarding.md`. |
+| **Malayalam Text-to-Speech (Indic-TTS)** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Scaffolding in `ai-engine/text_to_speech/`, awaiting model loading. |
+| **Malayalam Speech Recognition (ASR)** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Scaffolding in `ai-engine/speech_recognition/`, awaiting model loading. |
+| **OCR Document Reader (Tesseract 5)** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Upload & status API ready; Malayalam OCR pipeline in progress. |
+| **Medicine Reminders Feature Logic** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Native AlarmManager ready; recurrence rule scheduler in progress. |
+| **Low-Latency Audio Transcription** | **IN PROGRESS / SCAFFOLDED** | Member 2 | API routers in place; streaming STT pipeline in progress. |
+| **Fall Detection Sensor Telemetry** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Sensor listeners & algorithm math ready; calibration in progress. |
+| **Emergency SOS & Caregiver Coordination** | **IN PROGRESS / SCAFFOLDED** | Member 2 | Schemas & router ready; SMS/Push notification dispatch in progress. |
 
 ---
 
@@ -529,13 +573,18 @@ python scripts/verify_all.py
 
 | Verification Check | Target Component | Status |
 |---|---|---|
-| **Backend Unit Tests** | `backend/` pytest | **PASSED ✓** |
-| **AI Engine Unit Tests** | `ai-engine/` pytest | **PASSED ✓** |
-| **Backend Live Health** | `GET /health` (:8000) | **PASSED ✓** |
-| **AI Engine Live Health** | `GET /health` (:8001) | **PASSED ✓** |
+| **Backend Unit Tests** | `backend/` pytest (auth, profile, autofill, health) | **PASSED ✓** |
+| **AI Engine Unit Tests** | `ai-engine/` pytest (health & routes) | **PASSED ✓** |
+| **Backend Live Health** | `GET http://127.0.0.1:8000/health` | **PASSED ✓** |
+| **Backend v1 Live Health**| `GET http://127.0.0.1:8000/api/v1/health` | **PASSED ✓** |
+| **AI Engine Live Health** | `GET http://127.0.0.1:8001/health` | **PASSED ✓** |
 | **Live User Registration** | `POST /api/v1/auth/register` | **PASSED ✓** |
 | **Live User Authentication** | `POST /api/v1/auth/login` | **PASSED ✓** |
-| **Live Protected Endpoint** | `GET /api/v1/auth/me` | **PASSED ✓** |
+| **Live Protected /me Endpoint** | `GET /api/v1/auth/me` | **PASSED ✓** |
+| **Live Memory Bank Upsert** | `PATCH /api/v1/profile` | **PASSED ✓** |
+| **Live Memory Bank Retrieval** | `GET /api/v1/profile` | **PASSED ✓** |
+| **Smart Autofill Semantic Match** | `POST /api/v1/autofill/match` (Malayalam & English) | **PASSED ✓** |
+| **Smart Autofill Audit Log** | `POST /api/v1/autofill/confirm` | **PASSED ✓** |
 | **Flutter Static Analysis** | `frontend/mobile` (0 errors, 0 warnings) | **PASSED ✓** |
 | **Flutter Widget Tests** | `frontend/mobile` widget test suite | **PASSED ✓** |
 
@@ -568,19 +617,30 @@ make lint-frontend   # Runs flutter analyze
 
 ---
 
+## ⚠️ Known Limitations
+
+1. **Android Accessibility Permission Gate**: Due to Android platform security policies, the accessibility service cannot be enabled silently or programmatically. The user must manually enable Sahaayi in *Android Settings > Accessibility*.
+2. **Strict Security Filtering**: In compliance with privacy regulations, sensitive input types (passwords, PINs, OTPs, CVVs, debit/credit cards) are completely blocked from being read, parsed, or autofilled.
+3. **No Automatic Form Submission**: To protect senior citizens from unintended transactions or submissions, Sahaayi only injects verified field values; the user must explicitly review and tap the final submission button themselves.
+4. **AI Engine Compute Resource Requirements**: High-fidelity Malayalam speech synthesis and recognition require adequate CPU/GPU capacity on the AI Engine (:8001); on resource-constrained devices, on-device Android TTS acts as a low-latency fallback.
+5. **Experimental Sensor Fall Detection**: Acceleration and gyroscope telemetry heuristic thresholds are calibrated for general falls; it is explicitly not a replacement for certified medical-grade alarm hardware.
+
+---
+
 ## 🗺️ Roadmap
 
-- [x] **Phase 0: Architecture & Foundation (Completed)**
+- [x] **Phase 0: Architecture & Foundation (Completed & Verified)**
   - Full root directory scaffolding, 196 verified files, and modular separation.
   - Shared OpenAPI 3.1 contract and relational PostgreSQL DDL.
   - CI/CD workflows and multi-service Docker configuration.
-- [x] **Phase 1: Core Authentication & Mobile Integration Foundation (Completed)**
+- [x] **Phase 1: Core Implementation & Mobile Integration Foundation (Completed & Verified)**
   - End-to-end JWT registration, login, token refresh, and user profile (`/auth/me`).
   - All 12 SQLAlchemy 2.0 ORM models and Alembic baseline migration (`001_initial_schema`).
   - Dual-engine compatibility: PostgreSQL 15 + SQLite dev-mode fallback.
   - Complete 25-endpoint OpenAPI 3.1 YAML and 31 Pydantic JSON schemas.
   - Flutter accessible widget suite (`AccessibleButton`, `AccessibleTextField`, `AccessibleCard`, `AudioControlWidget`, `ConfirmationDialog`).
-  - Android native Kotlin services wired to `FlutterChannelBridge`.
+  - Android native Kotlin services wired to `FlutterChannelBridge` with `injectFieldValue` and `EventChannel` streaming.
+  - Smart Autofill joint foundation: Malayalam/English semantic matcher, security filtering, compliance audit logging, and Flutter confirmation UI.
   - Member 2 onboarding guide (`docs/MEMBER_2_ONBOARDING.md`) and 14-branch Git architecture.
 - [ ] **Phase 2: Document OCR & Verified Memory Bank (Member 2)**
   - Tesseract Malayalam language integration and prescription parsing.

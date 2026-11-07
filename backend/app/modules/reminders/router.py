@@ -1,10 +1,10 @@
 from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.dependencies import get_current_user, get_db
+from app.core.dependencies import get_current_active_user, get_db
 from app.modules.reminders.schemas import (
     ReminderCreate,
     ReminderUpdate,
@@ -20,14 +20,16 @@ router = APIRouter()
 def _extract_user_id(user) -> UUID:
     if hasattr(user, "id"):
         return user.id if isinstance(user.id, UUID) else UUID(str(user.id))
-    sub = user.get("sub") if isinstance(user, dict) else str(user)
-    return UUID(str(sub))
+    if isinstance(user, dict):
+        val = user.get("sub") or user.get("id")
+        return UUID(str(val))
+    return UUID(str(user))
 
 
 @router.post("", response_model=ReminderResponse, status_code=status.HTTP_201_CREATED)
 async def create_reminder(
     payload: ReminderCreate,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new medicine or appointment reminder."""
@@ -37,7 +39,7 @@ async def create_reminder(
 
 @router.get("", response_model=ReminderListResponse)
 async def list_reminders(
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """List all scheduled reminders for the authenticated user."""
@@ -49,7 +51,7 @@ async def list_reminders(
 @router.get("/{reminder_id}", response_model=ReminderResponse)
 async def get_reminder(
     reminder_id: UUID,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Retrieve details of a single reminder."""
@@ -64,7 +66,7 @@ async def get_reminder(
 async def update_reminder(
     reminder_id: UUID,
     payload: ReminderUpdate,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Update title, time, recurrence, or active status of a reminder."""
@@ -78,7 +80,7 @@ async def update_reminder(
 @router.delete("/{reminder_id}", status_code=status.HTTP_200_OK)
 async def delete_reminder(
     reminder_id: UUID,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Delete a reminder schedule."""
@@ -90,11 +92,14 @@ async def delete_reminder(
 
 
 @router.post("/{reminder_id}/acknowledge", response_model=ReminderAcknowledgeResponse)
-async def acknowledge_reminder_dose(
+async def acknowledge_dose(
     reminder_id: UUID,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Elderly user confirms taking the scheduled medicine dose."""
+    """User acknowledged taking scheduled medication dose."""
     user_id = _extract_user_id(current_user)
-    return await ReminderService.acknowledge_reminder(user_id, reminder_id, db=db)
+    result = await ReminderService.acknowledge_dose(user_id, reminder_id, db=db)
+    if not result:
+        raise HTTPException(status_code=404, detail="Reminder not found")
+    return result

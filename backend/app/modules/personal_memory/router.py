@@ -4,7 +4,7 @@ from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.dependencies import get_current_user, get_db
+from app.core.dependencies import get_current_active_user, get_db
 from app.modules.personal_memory.schemas import (
     UserProfileResponse,
     ProfileUpdatePayload,
@@ -21,13 +21,15 @@ router = APIRouter()
 def _extract_user_id(user) -> UUID:
     if hasattr(user, "id"):
         return user.id if isinstance(user.id, UUID) else UUID(str(user.id))
-    sub = user.get("sub") if isinstance(user, dict) else str(user)
-    return UUID(str(sub))
+    if isinstance(user, dict):
+        val = user.get("sub") or user.get("id")
+        return UUID(str(val))
+    return UUID(str(user))
 
 
 @router.get("", response_model=UserProfileResponse)
 async def get_profile(
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Retrieve full personal profile memory bank (both verified and draft items)."""
@@ -37,7 +39,7 @@ async def get_profile(
 
 @router.get("/verified", response_model=UserProfileResponse)
 async def get_verified_profile(
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Retrieve ONLY user-verified profile memory fields (usable by Smart Autofill)."""
@@ -49,7 +51,7 @@ async def get_verified_profile(
 @router.patch("", response_model=ProfileFieldItem)
 async def update_profile_field(
     payload: ProfileUpdatePayload,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Add or update a personal profile memory field."""
@@ -60,7 +62,7 @@ async def update_profile_field(
 @router.post("/verify", response_model=ProfileFieldItem)
 async def verify_field_body(
     payload: FieldVerificationPayload,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Promote a draft entity to USER-VERIFIED status."""
@@ -77,7 +79,7 @@ async def verify_field_body(
 @router.post("/verify/{field_name}", response_model=ProfileFieldItem)
 async def verify_field_path(
     field_name: str,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Promote a draft entity to USER-VERIFIED status by field name."""
@@ -95,7 +97,7 @@ async def verify_field_path(
 @router.post("/import-draft", response_model=List[ProfileFieldItem])
 async def import_draft_entities(
     payload: ProfileDraftImportPayload,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Extract entities from OCR text and import as unverified drafts for user review."""
@@ -106,7 +108,7 @@ async def import_draft_entities(
 @router.delete("/field/{field_name}", status_code=status.HTTP_200_OK)
 async def delete_profile_field(
     field_name: str,
-    current_user: dict = Depends(get_current_user),
+    current_user = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Remove a field from personal memory."""

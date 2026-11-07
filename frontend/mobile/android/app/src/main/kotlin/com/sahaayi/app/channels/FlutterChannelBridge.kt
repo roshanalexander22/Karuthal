@@ -3,6 +3,7 @@ package com.sahaayi.app.channels
 import android.content.Context
 import android.provider.Settings
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import com.sahaayi.app.accessibility.SahaayiAccessibilityService
@@ -12,12 +13,16 @@ import com.sahaayi.app.sensors.SensorMonitoringService
 /**
  * FlutterChannelBridge
  *
- * Centralized registry mapping Flutter MethodChannels to Native Android services:
- * - sahaayi/accessibility
- * - sahaayi/autofill
- * - sahaayi/sensors
- * - sahaayi/tts
- * - sahaayi/reminders
+ * Centralized registry mapping Flutter MethodChannels and EventChannels to Native Android services:
+ * - MethodChannels:
+ *   - sahaayi/accessibility
+ *   - sahaayi/autofill
+ *   - sahaayi/sensors
+ *   - sahaayi/tts
+ *   - sahaayi/reminders
+ * - EventChannels:
+ *   - sahaayi/sensor_events
+ *   - sahaayi/fall_events
  */
 class FlutterChannelBridge(private val context: Context, messenger: BinaryMessenger) : MethodChannel.MethodCallHandler {
 
@@ -27,6 +32,14 @@ class FlutterChannelBridge(private val context: Context, messenger: BinaryMessen
         const val CHANNEL_SENSORS = "sahaayi/sensors"
         const val CHANNEL_TTS = "sahaayi/tts"
         const val CHANNEL_REMINDERS = "sahaayi/reminders"
+
+        const val EVENT_CHANNEL_SENSORS = "sahaayi/sensor_events"
+        const val EVENT_CHANNEL_FALL = "sahaayi/fall_events"
+
+        var sensorEventSink: EventChannel.EventSink? = null
+            private set
+        var fallEventSink: EventChannel.EventSink? = null
+            private set
     }
 
     private val accessibilityChannel = MethodChannel(messenger, CHANNEL_ACCESSIBILITY)
@@ -34,6 +47,9 @@ class FlutterChannelBridge(private val context: Context, messenger: BinaryMessen
     private val sensorChannel = MethodChannel(messenger, CHANNEL_SENSORS)
     private val ttsChannel = MethodChannel(messenger, CHANNEL_TTS)
     private val reminderChannel = MethodChannel(messenger, CHANNEL_REMINDERS)
+
+    private val sensorEventChannel = EventChannel(messenger, EVENT_CHANNEL_SENSORS)
+    private val fallEventChannel = EventChannel(messenger, EVENT_CHANNEL_FALL)
 
     private val reminderNotificationService = ReminderNotificationService(context)
 
@@ -43,6 +59,24 @@ class FlutterChannelBridge(private val context: Context, messenger: BinaryMessen
         sensorChannel.setMethodCallHandler(this)
         ttsChannel.setMethodCallHandler(this)
         reminderChannel.setMethodCallHandler(this)
+
+        sensorEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                sensorEventSink = events
+            }
+            override fun onCancel(arguments: Any?) {
+                sensorEventSink = null
+            }
+        })
+
+        fallEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                fallEventSink = events
+            }
+            override fun onCancel(arguments: Any?) {
+                fallEventSink = null
+            }
+        })
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -61,7 +95,22 @@ class FlutterChannelBridge(private val context: Context, messenger: BinaryMessen
                     result.error("SERVICE_DISABLED", "Accessibility service is not active in Android Settings.", null)
                 }
             }
+            "injectFieldValue" -> {
+                val service = SahaayiAccessibilityService.instance
+                if (service != null) {
+                    val nodeId = call.argument<String>("nodeId") ?: ""
+                    val value = call.argument<String>("value") ?: ""
+                    val success = service.injectFieldValue(nodeId, value)
+                    result.success(success)
+                } else {
+                    result.error("SERVICE_DISABLED", "Accessibility service is not active in Android Settings.", null)
+                }
+            }
             "openAccessibilitySettings" -> {
+                val intent = android.content.Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
                 result.success(true)
             }
 
