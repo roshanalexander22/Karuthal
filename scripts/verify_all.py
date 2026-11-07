@@ -57,12 +57,13 @@ def main():
 
     results = {}
 
+    py_bin = sys.executable
     # 1. Backend Pytest
-    ok, out = run_step("Backend Pytest", "pytest -v", cwd="backend")
+    ok, out = run_step("Backend Pytest", f'"{py_bin}" -m pytest -v', cwd="backend")
     results["Backend Unit Tests"] = ok
 
     # 2. AI Engine Pytest
-    ok, out = run_step("AI Engine Pytest", "pytest -v", cwd="ai-engine")
+    ok, out = run_step("AI Engine Pytest", f'"{py_bin}" -m pytest -v', cwd="ai-engine")
     results["AI Engine Unit Tests"] = ok
 
     # 3. Live Backend Health

@@ -1,19 +1,17 @@
 import 'package:flutter/services.dart';
 
-/**
- * PlatformChannels
- *
- * Central Dart platform interface mapping to native Android services:
- * - MethodChannels:
- *   - sahaayi/accessibility
- *   - sahaayi/autofill
- *   - sahaayi/sensors
- *   - sahaayi/tts
- *   - sahaayi/reminders
- * - EventChannels:
- *   - sahaayi/sensor_events
- *   - sahaayi/fall_events
- */
+/// PlatformChannels
+///
+/// Central Dart platform interface mapping to native Android services:
+/// - MethodChannels:
+///   - sahaayi/accessibility
+///   - sahaayi/autofill
+///   - sahaayi/sensors
+///   - sahaayi/tts
+///   - sahaayi/reminders
+/// - EventChannels:
+///   - sahaayi/sensor_events
+///   - sahaayi/fall_events
 class PlatformChannels {
   static const MethodChannel accessibility = MethodChannel('sahaayi/accessibility');
   static const MethodChannel autofill = MethodChannel('sahaayi/autofill');

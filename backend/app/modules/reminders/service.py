@@ -243,3 +243,5 @@ class ReminderService:
             message="മരുന്ന് കഴിച്ചത് രേഖപ്പെടുത്തി (Dose recorded)",
             status="TAKEN"
         )
+
+    acknowledge_dose = acknowledge_reminder

@@ -167,9 +167,10 @@ class PersonalMemoryService:
         now = datetime.now(timezone.utc)
 
         # 1. Update in memory
+        val_to_update = getattr(payload, "edited_value", None) or getattr(payload, "updated_value", None)
         if user_id in _in_memory_profile_fields and target_name in _in_memory_profile_fields[user_id]:
             existing = _in_memory_profile_fields[user_id][target_name]
-            updated_val = payload.updated_value if payload.updated_value is not None else existing.field_value
+            updated_val = val_to_update if val_to_update is not None else existing.field_value
             updated = ProfileFieldItem(
                 field_name=target_name,
                 field_value=updated_val,
@@ -193,8 +194,8 @@ class PersonalMemoryService:
                 result = await db.execute(stmt)
                 db_field = result.scalars().first()
                 if db_field:
-                    if payload.updated_value is not None:
-                        db_field.field_value = payload.updated_value
+                    if val_to_update is not None:
+                        db_field.field_value = val_to_update
                     db_field.is_verified = payload.is_verified
                     db_field.confidence_score = 1.0
                     await db.commit()

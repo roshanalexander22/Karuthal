@@ -10,6 +10,11 @@ class TranscriptSegment(BaseModel):
     text: str
     speaker: Optional[str] = "സ്പീക്കർ"
 
+class TranscriptionSessionResponse(BaseModel):
+    session_id: UUID
+    stream_url: str
+    status: str
+
 class TranscriptionUploadResponse(BaseModel):
     id: UUID
     filename: str
