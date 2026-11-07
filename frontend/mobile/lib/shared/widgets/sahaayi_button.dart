@@ -52,10 +52,13 @@ class SahaayiButton extends StatelessWidget {
                       Icon(icon, size: 26),
                       const SizedBox(width: 10),
                     ],
-                    Text(
-                      label,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
