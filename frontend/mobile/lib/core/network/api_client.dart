@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import '../../config/app_config.dart';
 import '../constants/api_endpoints.dart';
 import '../constants/app_constants.dart';
@@ -19,8 +20,6 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 // ── Dio factory ──────────────────────────────────────────────────────────────
 
 Dio _buildDio(Ref ref) {
-  final log = AppLogger.forName('DioClient');
-
   final dio = Dio(
     BaseOptions(
       baseUrl: AppConfig.apiBaseUrl,
@@ -38,7 +37,7 @@ Dio _buildDio(Ref ref) {
 
   // Add interceptors in priority order
   dio.interceptors.addAll([
-    _LoggingInterceptor(log),
+    _LoggingInterceptor(),
     _JwtInterceptor(dio),
     _ErrorInterceptor(),
   ]);
@@ -49,29 +48,22 @@ Dio _buildDio(Ref ref) {
 // ── Logging Interceptor ───────────────────────────────────────────────────────
 
 class _LoggingInterceptor extends Interceptor {
-  _LoggingInterceptor(this._log);
-
-  final AppLogger _log;
-
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    _log.d('→ ${options.method} ${options.uri}');
-    if (options.data != null) _log.d('  Body: ${options.data}');
+    AppLogger.d('→ ${options.method} ${options.uri}');
+    if (options.data != null) AppLogger.d('  Body: ${options.data}');
     handler.next(options);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    _log.d('← ${response.statusCode} ${response.requestOptions.uri}');
+    AppLogger.d('← ${response.statusCode} ${response.requestOptions.uri}');
     handler.next(response);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    _log.e(
-      '✗ ${err.requestOptions.method} ${err.requestOptions.uri}',
-      err,
-    );
+    AppLogger.e('✗ ${err.requestOptions.method} ${err.requestOptions.uri}', err);
     handler.next(err);
   }
 }

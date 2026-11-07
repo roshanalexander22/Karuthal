@@ -64,18 +64,24 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  build_runner: ^2.4.11
+  riverpod_generator: ^2.4.3
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  retrofit_generator: ^9.7.0
   mocktail: ^1.0.4
 
 flutter:
   uses-material-design: true
   generate: true
-  assets:
-    - assets/images/
-    - assets/icons/
-    - assets/animations/
-#  fonts:
-#    - family: NotoSansMalayalam
-#      fonts:
-#        - asset: assets/fonts/NotoSansMalayalam-Regular.ttf
-#        - asset: assets/fonts/NotoSansMalayalam-Bold.ttf
-#          weight: 700
+  # Asset directories and custom font files to be added during Phase 2
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
+  #   - assets/animations/
+  # fonts:
+  #   - family: NotoSansMalayalam
+  #     fonts:
+  #       - asset: assets/fonts/NotoSansMalayalam-Regular.ttf
+  #       - asset: assets/fonts/NotoSansMalayalam-Bold.ttf
+  #         weight: 700

@@ -42,7 +42,7 @@ abstract final class SahaayiTheme {
           fontSize: size,
           fontWeight: weight,
           color: baseColor,
-        ).copyWith(fontFamilyFallback: const ['NotoSansMalayalam']);
+        );
 
     return TextTheme(
       // Display
@@ -103,7 +103,7 @@ abstract final class SahaayiTheme {
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: Colors.white,
-        ).copyWith(fontFamilyFallback: const ['NotoSansMalayalam']),
+        ),
         iconTheme: const IconThemeData(size: 28, color: Colors.white),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -172,11 +172,11 @@ abstract final class SahaayiTheme {
         labelStyle: GoogleFonts.notoSans(
           fontSize: 16,
           color: const Color(0xFF555555),
-        ).copyWith(fontFamilyFallback: const ['NotoSansMalayalam']),
+        ),
         hintStyle: GoogleFonts.notoSans(
           fontSize: 16,
           color: const Color(0xFF999999),
-        ).copyWith(fontFamilyFallback: const ['NotoSansMalayalam']),
+        ),
         errorStyle: GoogleFonts.notoSans(
           fontSize: 14,
           color: _errorColor,
@@ -206,8 +206,8 @@ abstract final class SahaayiTheme {
         unselectedItemColor: Color(0xFF777777),
         selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         unselectedLabelStyle: TextStyle(fontSize: 13),
-        selectedIconTheme: IconThemeData(size: 28),
-        unselectedIconTheme: IconThemeData(size: 28),
+        selectedIconTheme: const IconThemeData(size: 28),
+        unselectedIconTheme: const IconThemeData(size: 28),
         showUnselectedLabels: true,
       ),
     );
@@ -238,7 +238,7 @@ abstract final class SahaayiTheme {
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: _darkPrimaryColor,
-        ).copyWith(fontFamilyFallback: const ['NotoSansMalayalam']),
+        ),
         iconTheme: const IconThemeData(size: 28, color: _darkPrimaryColor),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

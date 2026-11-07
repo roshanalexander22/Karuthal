@@ -57,7 +57,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     logger.info("Sahaayi API starting up …")
     logger.info("Environment: %s", settings.APP_ENV)
 
-    # Verify DB connectivity (logs warning in dev/test if database server is not running)
+    # Verify DB connectivity (gracefully warn in development if DB is offline)
     import socket
     db_available = False
     try:
@@ -74,9 +74,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
             async with engine.connect() as conn:  # noqa: F841
                 logger.info("Database connection verified.")
         except Exception as exc:
-            logger.warning("Database connection failed (%s). Running with database unavailable.", exc)
+            if settings.APP_ENV == "development":
+                logger.warning("Database connection failed (running in dev mode without active DB): %s", exc)
+            else:
+                raise exc
     else:
-        logger.warning("Database server (%s:%s) is offline. Running with database unavailable.", settings.DB_HOST, settings.DB_PORT)
+        if settings.APP_ENV == "development":
+            logger.warning("Database server (%s:%s) is offline. Running with database unavailable.", settings.DB_HOST, settings.DB_PORT)
+        else:
+            raise RuntimeError(f"Database server ({settings.DB_HOST}:{settings.DB_PORT}) is offline.")
 
     logger.info("Sahaayi API is ready.")
 
