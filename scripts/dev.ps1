@@ -17,3 +17,4 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd frontend/mobil
 Write-Host "`nAll development processes launched in separate windows!" -ForegroundColor Yellow
 Write-Host "Backend API docs: http://127.0.0.1:8000/docs" -ForegroundColor Yellow
 Write-Host "AI Engine docs:  http://127.0.0.1:8001/docs" -ForegroundColor Yellow
+

@@ -15,15 +15,18 @@ class ProfileRepository {
   ProfileRepository(this._apiClient);
 
   /// Fetch full profile memory or strictly verified fields.
-  Future<List<ProfileFieldModel>> getProfile({bool verifiedOnly = false}) async {
+  Future<List<ProfileFieldModel>> getProfile(
+      {bool verifiedOnly = false}) async {
     try {
-      final endpoint = verifiedOnly ? ApiEndpoints.memoryVerified : ApiEndpoints.memoryList;
+      final endpoint =
+          verifiedOnly ? ApiEndpoints.memoryVerified : ApiEndpoints.memoryList;
       final response = await _apiClient.get<dynamic>(endpoint);
 
       if (response.data != null && response.data is Map<String, dynamic>) {
         final fieldsList = response.data['fields'] as List<dynamic>? ?? [];
         return fieldsList
-            .map((item) => ProfileFieldModel.fromJson(item as Map<String, dynamic>))
+            .map((item) =>
+                ProfileFieldModel.fromJson(item as Map<String, dynamic>))
             .toList();
       }
       return [];
@@ -48,7 +51,8 @@ class ProfileRepository {
   }
 
   /// Verify or edit-and-verify a draft field.
-  Future<ProfileFieldModel> verifyField(String fieldName, {String? editedValue}) async {
+  Future<ProfileFieldModel> verifyField(String fieldName,
+      {String? editedValue}) async {
     try {
       final response = await _apiClient.post<dynamic>(
         '${ApiEndpoints.memoryList}/verify',
@@ -68,7 +72,8 @@ class ProfileRepository {
   /// Remove a field from personal memory.
   Future<void> deleteField(String fieldName) async {
     try {
-      await _apiClient.delete<dynamic>('${ApiEndpoints.memoryList}/field/$fieldName');
+      await _apiClient
+          .delete<dynamic>('${ApiEndpoints.memoryList}/field/$fieldName');
     } catch (e) {
       AppLogger.e('Failed to delete field $fieldName: $e');
       rethrow;

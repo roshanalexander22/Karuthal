@@ -5,7 +5,8 @@ import '../../../core/network/api_client.dart';
 import '../../../core/utils/logger.dart';
 import '../models/transcription_model.dart';
 
-final transcriptionRepositoryProvider = Provider<TranscriptionRepository>((ref) {
+final transcriptionRepositoryProvider =
+    Provider<TranscriptionRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return TranscriptionRepository(apiClient);
 });
@@ -32,7 +33,8 @@ class TranscriptionRepository {
       );
 
       if (response.data is Map<String, dynamic>) {
-        return TranscriptionModel.fromJson(response.data as Map<String, dynamic>);
+        return TranscriptionModel.fromJson(
+            response.data as Map<String, dynamic>);
       }
       throw Exception('Invalid server response');
     } catch (e) {
@@ -43,7 +45,8 @@ class TranscriptionRepository {
 
   Future<List<TranscriptionModel>> getTranscriptions() async {
     try {
-      final response = await _apiClient.get<dynamic>(ApiEndpoints.transcriptionList);
+      final response =
+          await _apiClient.get<dynamic>(ApiEndpoints.transcriptionList);
       if (response.data is Map<String, dynamic>) {
         final list = response.data['transcriptions'] as List<dynamic>? ?? [];
         return list

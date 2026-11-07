@@ -34,14 +34,15 @@ def run_step(name, cmd, cwd=None):
 def test_http(name, url, method="GET", data=None, headers=None):
     print(f"\n[HTTP PROBE] {name} ({method} {url})...")
     try:
-        req = urllib.request.Request(url, method=method)
-        if headers:
-            for k, v in headers.items():
-                req.add_header(k, v)
-        body = json.dumps(data).encode("utf-8") if data else None
-        if body:
-            req.add_header("Content-Type", "application/json; charset=utf-8")
-        res = urllib.request.urlopen(req, data=body, timeout=15)
+        req_headers = dict(headers or {})
+        body = None
+        if data is not None:
+            body = json.dumps(data).encode("utf-8")
+            req_headers["Content-Type"] = "application/json; charset=utf-8"
+            req_headers["Content-Length"] = str(len(body))
+
+        req = urllib.request.Request(url, data=body, headers=req_headers, method=method)
+        res = urllib.request.urlopen(req, timeout=15)
         status = res.getcode()
         resp_data = json.loads(res.read().decode("utf-8"))
         print(f"  ✓ {name} SUCCESS ({status})")

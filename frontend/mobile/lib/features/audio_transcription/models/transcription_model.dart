@@ -52,7 +52,8 @@ class TranscriptionModel {
       summary: json['summary'] as String?,
       durationSeconds: (json['duration_seconds'] as num?)?.toDouble() ?? 0.0,
       segments: segList
-          .map((s) => TranscriptionSegmentModel.fromJson(s as Map<String, dynamic>))
+          .map((s) =>
+              TranscriptionSegmentModel.fromJson(s as Map<String, dynamic>))
           .toList(),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String) ?? DateTime.now()

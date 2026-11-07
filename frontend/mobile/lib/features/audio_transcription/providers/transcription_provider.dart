@@ -62,7 +62,8 @@ class TranscriptionNotifier extends StateNotifier<TranscriptionState> {
     try {
       // Create a mock audio buffer representing microphone recording
       final dummyWav = List<int>.filled(64000, 0);
-      final result = await _repository.uploadAudioBytes(dummyWav, 'recording.wav');
+      final result =
+          await _repository.uploadAudioBytes(dummyWav, 'recording.wav');
       state = state.copyWith(
         isProcessing: false,
         currentTranscript: result,
@@ -73,13 +74,27 @@ class TranscriptionNotifier extends StateNotifier<TranscriptionState> {
       final fallback = TranscriptionModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         language: 'ml',
-        fullText: 'ഡോക്ടർ ബിപി പരിശോധിച്ചു (130/85). ഗുളിക കൃത്യമായി കഴിക്കാനും ഉപ്പ് കുറയ്ക്കാനും നിർദ്ദേശിച്ചു.',
-        summary: '• ബിപി നില തൃപ്തികരമാണ് (130/85).\n• ഗുളികകൾ കൃത്യമായി കഴിക്കുക.\n• ഉപ്പിന്റെ അളവ് കുറയ്ക്കുക.',
+        fullText:
+            'ഡോക്ടർ ബിപി പരിശോധിച്ചു (130/85). ഗുളിക കൃത്യമായി കഴിക്കാനും ഉപ്പ് കുറയ്ക്കാനും നിർദ്ദേശിച്ചു.',
+        summary:
+            '• ബിപി നില തൃപ്തികരമാണ് (130/85).\n• ഗുളികകൾ കൃത്യമായി കഴിക്കുക.\n• ഉപ്പിന്റെ അളവ് കുറയ്ക്കുക.',
         durationSeconds: 9.0,
         segments: const [
-          TranscriptionSegmentModel(startTime: 0.0, endTime: 3.0, speaker: 'ഡോക്ടർ', text: 'ബിപി പരിശോധിച്ചു, ഇപ്പോൾ 130/85 ആണ്.'),
-          TranscriptionSegmentModel(startTime: 3.0, endTime: 6.0, speaker: 'രോഗി', text: 'മരുന്നുകൾ കൃത്യമായി കഴിക്കുന്നുണ്ട്.'),
-          TranscriptionSegmentModel(startTime: 6.0, endTime: 9.0, speaker: 'ഡോക്ടർ', text: 'നല്ലത്, ഭക്ഷണത്തിൽ ഉപ്പ് കുറയ്ക്കണം. അടുത്ത മാസം കാണാം.')
+          TranscriptionSegmentModel(
+              startTime: 0.0,
+              endTime: 3.0,
+              speaker: 'ഡോക്ടർ',
+              text: 'ബിപി പരിശോധിച്ചു, ഇപ്പോൾ 130/85 ആണ്.'),
+          TranscriptionSegmentModel(
+              startTime: 3.0,
+              endTime: 6.0,
+              speaker: 'രോഗി',
+              text: 'മരുന്നുകൾ കൃത്യമായി കഴിക്കുന്നുണ്ട്.'),
+          TranscriptionSegmentModel(
+              startTime: 6.0,
+              endTime: 9.0,
+              speaker: 'ഡോക്ടർ',
+              text: 'നല്ലത്, ഭക്ഷണത്തിൽ ഉപ്പ് കുറയ്ക്കണം. അടുത്ത മാസം കാണാം.')
         ],
         createdAt: DateTime.now(),
       );
@@ -101,7 +116,8 @@ class TranscriptionNotifier extends StateNotifier<TranscriptionState> {
         pastTranscriptions: [result, ...state.pastTranscriptions],
       );
     } catch (e) {
-      state = state.copyWith(isProcessing: false, errorMessage: 'Upload failed: $e');
+      state = state.copyWith(
+          isProcessing: false, errorMessage: 'Upload failed: $e');
     }
   }
 }

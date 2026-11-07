@@ -89,7 +89,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
   Future<void> verifyField(String fieldName, {String? editedValue}) async {
     try {
-      final updated = await _repository.verifyField(fieldName, editedValue: editedValue);
+      final updated =
+          await _repository.verifyField(fieldName, editedValue: editedValue);
       final updatedList = state.fields.map((f) {
         if (f.fieldName == fieldName) {
           return updated;
@@ -112,7 +113,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     }
   }
 
-  Future<void> upsertField(String name, String value, {bool isVerified = true}) async {
+  Future<void> upsertField(String name, String value,
+      {bool isVerified = true}) async {
     final model = ProfileFieldModel(
       fieldName: name,
       fieldValue: value,

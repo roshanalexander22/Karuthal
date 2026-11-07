@@ -45,13 +45,15 @@ class ReminderRepository {
 
   Future<void> acknowledgeDose(String reminderId) async {
     try {
-      await _apiClient.post<dynamic>('${ApiEndpoints.reminderList}/$reminderId/acknowledge');
+      await _apiClient.post<dynamic>(
+          '${ApiEndpoints.reminderList}/$reminderId/acknowledge');
     } catch (e) {
       AppLogger.e('Failed to acknowledge reminder dose: $e');
     }
   }
 
-  Future<void> updateReminder(String reminderId, Map<String, dynamic> data) async {
+  Future<void> updateReminder(
+      String reminderId, Map<String, dynamic> data) async {
     try {
       await _apiClient.patch<dynamic>(
         '${ApiEndpoints.reminderList}/$reminderId',
@@ -65,7 +67,8 @@ class ReminderRepository {
 
   Future<void> deleteReminder(String reminderId) async {
     try {
-      await _apiClient.delete<dynamic>('${ApiEndpoints.reminderList}/$reminderId');
+      await _apiClient
+          .delete<dynamic>('${ApiEndpoints.reminderList}/$reminderId');
     } catch (e) {
       AppLogger.e('Failed to delete reminder: $e');
       rethrow;

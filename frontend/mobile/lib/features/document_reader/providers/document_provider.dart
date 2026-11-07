@@ -7,7 +7,8 @@ final documentRepositoryProvider = Provider<DocumentRepository>((ref) {
   return DocumentRepository(apiClient);
 });
 
-final documentListProvider = FutureProvider.autoDispose<List<DocumentItem>>((ref) async {
+final documentListProvider =
+    FutureProvider.autoDispose<List<DocumentItem>>((ref) async {
   final repo = ref.watch(documentRepositoryProvider);
   return repo.getDocuments();
 });

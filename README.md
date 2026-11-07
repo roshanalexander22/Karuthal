@@ -245,24 +245,24 @@ A light, calming, high-contrast palette is enforced (`ThemeMode.light` only) to 
 4. **Card-Based Visual Hierarchy**: Screens are segmented into distinct rounded cards (`AccessibleCard`, 20dp border radius, 1.2px subtle borders) to reduce cognitive load and isolate actionable items.
 5. **Multi-Modal Feedback**: Haptic pulses, voice confirmations, and high-visibility status chips accompany all interactive gestures.
 
-### Screen-by-Screen Implementation
+### Screen-by-Screen Implementation & Complete Button Interactivity
 
-| Screen | Route | Capabilities & Features |
+| Screen | Route | Capabilities & Finished Interactive Actions |
 |---|---|---|
 | **Welcome & Login** | `/auth/login` | Sahaayi branding, large input fields, eye password toggle, instant feedback banner, wired to real JWT API. |
-| **Registration** | `/auth/register` | Full name, email, phone, and password with real-time validation and error recovery. |
-| **Home Dashboard** | `/` | Warm Malayalam greeting banner (*"നമസ്കാരം! ഇന്ന് സഹായി എന്തു ചെയ്യണം?"*), live medicine reminder alert card, emergency SOS quick trigger, 5 primary service cards, 4-tab bottom navigation. |
-| **OCR Document Vault** | `/documents` | Categorized cards (Identity, Medical, Banking), status badges (*"ഉറപ്പിച്ചു"* / *"പരിശോധനയിൽ"*), interactive detail bottom sheet modal, and upload dropzone. |
-| **Document Upload** | `/documents/upload`| Camera capture, file picker, document category choice chips, and high-visibility preview. |
-| **Medicine Reminders** | `/reminders` | Schedule summary card, interactive checkmark toggle marking doses taken with visual distinction, and new schedule creator. |
-| **New Reminder Form** | `/reminders/new` | Medicine name, dosage, native `TimePicker` integration, meal timing chips (Before food, After food, Bedtime). |
-| **Malayalam Voice Assistant**| `/voice` | Real-time listening indicator, interactive 96dp animated mic with glow effect, live Malayalam transcript card, and suggested question chips. |
-| **Smart Autofill Assistant** | `/autofill` | Accessibility service status card, privacy guarantee note (zero passwords/OTPs), screen inspection trigger, proposed fields checklist, and confirmed form injection. |
-| **Verified Memory Profile** | `/profile` | Verified user identity card (*മാധവൻ നായർ, 74 yrs, Kottayam*), verified memory bank cards with green badges, and caregiver sync link. |
-| **Emergency SOS Hub** | `/emergency` | High-visibility 190dp SOS trigger, one-tap calling cards (Caregiver, Family Doctor, 108 Ambulance), GPS status badge, and *"I am Safe"* cancellation. |
+| **Registration** | `/auth/register` | Full name, email, phone, and password with real-time validation, error recovery, and automatic session setup. |
+| **Home Dashboard** | `/` | Warm Malayalam greeting banner (*"നമസ്കാരം! ഇന്ന് സഹായി എന്തു ചെയ്യണം?"*), upcoming medicine alert card, emergency SOS quick trigger, 5 primary service cards, 4-tab bottom navigation with live routing. |
+| **OCR Document Vault** | `/documents` | Categorized cards (Identity, Medical, Banking), status badges (*"ഉറപ്പിച്ചു"* / *"പരിശോധനയിൽ"*), interactive detail modal with **"വായിക്കുക (Read Aloud)"** and **"കോപ്പി ചെയ്യുക (Copy Text)"** actions. |
+| **Document Upload** | `/documents/upload`| Interactive dropzone with tap-to-upload, camera photo capture, file picker, document category choice chips, and high-visibility preview. |
+| **Medicine Reminders** | `/reminders` | Schedule summary card, whole-card and checkmark dose toggles marking doses taken with visual distinction and feedback, and new schedule creator. |
+| **New Reminder Form** | `/reminders/new` | Medicine name, dosage, native `TimePicker` integration, meal timing chips (Before food, After food, Bedtime), form validation and immediate save. |
+| **Malayalam Voice Assistant**| `/voice` | Multi-turn conversational view (user & assistant chat bubbles), interactive question chips (tapping automatically executes query), text input bar for web/typing, re-listen audio button, and 96dp animated mic toggle. |
+| **Smart Autofill Assistant** | `/autofill` | Accessibility service status card, privacy guarantee note (zero passwords/OTPs), screen inspection trigger with demo simulation mode, proposed fields checklist, and confirmed form injection. |
+| **Verified Memory Profile** | `/profile` | Verified identity card (*മാധവൻ നായർ, 74 yrs, Kottayam*), tap-to-edit memory dialog, **"പുതിയ വിവരം ചേർക്കുക (Add Information)"** modal sheet, clipboard copy buttons, and caregiver sync link. |
+| **Emergency SOS Hub** | `/emergency` | High-visibility 190dp SOS trigger, one-tap calling buttons (Caregiver, Family Doctor, 108 Ambulance), GPS status badge, and *"ഞാൻ സുരക്ഷിതനാണ് (I am Safe)"* cancellation. |
 | **Settings & Accessibility**| `/settings` | Malayalam/English language toggle, font size selector (Normal/Large/Extra Large), speech rate slider (0.85x recommended), high-contrast mode, and confirmed logout dialog. |
-| **Caregiver Coordination** | `/caregiver` | Connected caregiver relationship cards, contact shortcuts, permission scopes, and new caregiver linking. |
-| **Fall Detection Alert** | `/fall-detection`| Medical disclaimer notice, live sensor accelerometer telemetry toggle (1.02g baseline), and 3-step automated safety explanation. |
+| **Caregiver Coordination** | `/caregiver` | Connected caregiver relationship cards, direct call simulation, permission scopes, and an interactive **"പുതിയ പരിചാരകനെ ചേർക്കുക"** bottom sheet with validation. |
+| **Fall Detection Alert** | `/fall-detection`| Medical disclaimer notice, live sensor accelerometer telemetry toggle (1.02g baseline), sensitivity selector (Low/Medium/High), **"വീഴ്ച കണ്ടെത്തൽ പരീക്ഷിക്കുക (Test Fall Alert)"** simulation with 30s emergency countdown banner and cancel controls. |
 | **Screen Reading (TTS)** | `/tts` | Malayalam speech synthesis playground, large text editor, read aloud and stop controls. |
 | **Audio Transcription** | `/transcription` | Voice note recorder, real-time audio waveform simulation, and Malayalam AI transcript display with clipboard copy. |
 

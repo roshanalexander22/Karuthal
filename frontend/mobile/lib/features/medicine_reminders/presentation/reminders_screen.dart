@@ -129,9 +129,28 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                   final isTaken = rem['isTaken'] as bool;
                   final id = rem['id'] as String;
 
+                  void toggleTaken() {
+                    setState(() {
+                      if (isTaken) {
+                        _completedIds.remove(id);
+                      } else {
+                        _completedIds.add(id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                '${rem['title']} കഴിച്ചതായി രേഖപ്പെടുത്തി!'),
+                            backgroundColor: SahaayiColors.success,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    });
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: AccessibleCard(
+                      onTap: toggleTaken,
                       backgroundColor:
                           isTaken ? const Color(0xFFF1F5F9) : Colors.white,
                       border: isTaken
@@ -222,23 +241,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                                   ? SahaayiColors.success
                                   : SahaayiColors.primary,
                             ),
-                            onPressed: () {
-                              setState(() {
-                                if (isTaken) {
-                                  _completedIds.remove(id);
-                                } else {
-                                  _completedIds.add(id);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'മരുന്ന് കഴിച്ചതായി രേഖപ്പെടുത്തി!'),
-                                      backgroundColor: SahaayiColors.success,
-                                      duration: Duration(seconds: 2),
-                                    ),
-                                  );
-                                }
-                              });
-                            },
+                            onPressed: toggleTaken,
                           ),
                         ],
                       ),

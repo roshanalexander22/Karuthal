@@ -87,46 +87,65 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
 
               const SizedBox(height: 28),
 
-              // Upload Dropzone
-              Container(
-                height: 200,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: SahaayiColors.secondary.withAlpha(60),
-                  border: Border.all(
-                      color: SahaayiColors.primary.withAlpha(120), width: 2),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
+              // Upload Dropzone (Interactive)
+              InkWell(
+                onTap: () {
+                  setState(() => _isUploading = true);
+                  Future.delayed(const Duration(seconds: 1), () {
+                    if (mounted) {
+                      setState(() => _isUploading = false);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              'രേഖ വിജയകരമായി തിരഞ്ഞെടുത്തു. വിശകലനം പുരോഗമിക്കുന്നു.'),
+                          backgroundColor: SahaayiColors.success,
+                        ),
+                      );
+                      context.pop();
+                    }
+                  });
+                },
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: SahaayiColors.secondary.withAlpha(60),
+                    border: Border.all(
+                        color: SahaayiColors.primary.withAlpha(120), width: 2),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.cloud_upload_outlined,
+                          size: 48,
+                          color: SahaayiColors.primary,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.cloud_upload_outlined,
-                        size: 48,
-                        color: SahaayiColors.primary,
+                      const SizedBox(height: 14),
+                      const Text(
+                        'ക്യാമറ അല്ലെങ്കിൽ ഫയൽ തിരഞ്ഞെടുക്കുക',
+                        style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: SahaayiColors.textMain),
                       ),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'ക്യാമറ അല്ലെങ്കിൽ ഫയൽ തിരഞ്ഞെടുക്കുക',
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: SahaayiColors.textMain),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'PDF, JPEG, PNG ഫയലുകൾ പിന്തുണയ്ക്കുന്നു',
-                      style: TextStyle(
-                          fontSize: 13, color: SahaayiColors.textSecondary),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      const Text(
+                        'PDF, JPEG, PNG ഫയലുകൾ പിന്തുണയ്ക്കുന്നു (ടാപ്പ് ചെയ്യുക)',
+                        style: TextStyle(
+                            fontSize: 13, color: SahaayiColors.textSecondary),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 

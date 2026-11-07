@@ -49,7 +49,9 @@ class DocumentRepository {
       final response = await _apiClient.get(ApiEndpoints.documentList);
       final data = response.data as Map<String, dynamic>;
       final list = data['documents'] as List<dynamic>? ?? [];
-      return list.map((item) => DocumentItem.fromJson(item as Map<String, dynamic>)).toList();
+      return list
+          .map((item) => DocumentItem.fromJson(item as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       AppLogger.w('Fetch documents fallback: $e');
       return [
@@ -59,7 +61,8 @@ class DocumentRepository {
           fileType: 'image/jpeg',
           documentCategory: 'IDENTITY',
           ocrStatus: 'COMPLETED',
-          extractedText: 'പേര്: രാമൻ നായർ\nആധാർ: 5482 9102 3847\nവിലാസം: ശാന്തി ഭവൻ, തിരുവനന്തപുരം',
+          extractedText:
+              'പേര്: രാമൻ നായർ\nആധാർ: 5482 9102 3847\nവിലാസം: ശാന്തി ഭവൻ, തിരുവനന്തപുരം',
         ),
         DocumentItem(
           id: 'mock-2',
@@ -67,7 +70,8 @@ class DocumentRepository {
           fileType: 'application/pdf',
           documentCategory: 'PRESCRIPTION',
           ocrStatus: 'COMPLETED',
-          extractedText: 'Paracetamol 500mg - ദിവസേന രണ്ട് നേരം\nMetformin 500mg - ഭക്ഷണത്തിന് ശേഷം',
+          extractedText:
+              'Paracetamol 500mg - ദിവസേന രണ്ട് നേരം\nMetformin 500mg - ഭക്ഷണത്തിന് ശേഷം',
         ),
       ];
     }
@@ -82,7 +86,8 @@ class DocumentRepository {
         ),
         'category': category,
       });
-      final response = await _apiClient.upload(ApiEndpoints.documentUpload, formData: formData);
+      final response = await _apiClient.upload(ApiEndpoints.documentUpload,
+          formData: formData);
       return DocumentItem.fromJson(response.data as Map<String, dynamic>);
     } catch (e) {
       AppLogger.e('Upload document error: $e');
@@ -92,7 +97,8 @@ class DocumentRepository {
 
   Future<DocumentItem?> getDocument(String id) async {
     try {
-      final response = await _apiClient.get('${ApiEndpoints.documentDetail}/$id');
+      final response =
+          await _apiClient.get('${ApiEndpoints.documentDetail}/$id');
       return DocumentItem.fromJson(response.data as Map<String, dynamic>);
     } catch (e) {
       AppLogger.e('Get document error: $e');

@@ -28,7 +28,8 @@ class AutofillRepository {
       if (response.data is Map<String, dynamic>) {
         final matches = response.data['matches'] as List<dynamic>? ?? [];
         return matches
-            .map((m) => FieldMatchProposalModel.fromJson(m as Map<String, dynamic>))
+            .map((m) =>
+                FieldMatchProposalModel.fromJson(m as Map<String, dynamic>))
             .toList();
       }
       return [];

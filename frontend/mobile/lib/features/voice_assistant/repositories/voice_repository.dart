@@ -54,7 +54,8 @@ class VoiceRepository {
   }
 
   /// Synthesize text to speech audio.
-  Future<String?> convertTTS(String text, {String language = 'ml', double speed = 0.85}) async {
+  Future<String?> convertTTS(String text,
+      {String language = 'ml', double speed = 0.85}) async {
     try {
       final response = await _apiClient.post<dynamic>(
         ApiEndpoints.ttsConvert,

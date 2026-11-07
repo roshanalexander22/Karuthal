@@ -22,7 +22,8 @@ class TTSService {
   TTSService() {
     _initNativeTts();
     _player.playerStateStream.listen((state) {
-      _isPlaying = state.playing && state.processingState != ProcessingState.completed;
+      _isPlaying =
+          state.playing && state.processingState != ProcessingState.completed;
     });
   }
 

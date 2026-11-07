@@ -111,13 +111,15 @@ final reminderNotifierProvider =
 });
 
 // Backward compatibility alias
-final remindersListProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final remindersListProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final state = ref.watch(reminderNotifierProvider);
   return state.reminders
       .map((r) => {
             'id': r.id,
             'title': r.title,
-            'time': '${r.scheduledTime.hour.toString().padLeft(2, '0')}:${r.scheduledTime.minute.toString().padLeft(2, '0')}',
+            'time':
+                '${r.scheduledTime.hour.toString().padLeft(2, '0')}:${r.scheduledTime.minute.toString().padLeft(2, '0')}',
             'type': r.reminderType,
             'dosage': r.dosage,
             'instructions': r.instructionsMl,

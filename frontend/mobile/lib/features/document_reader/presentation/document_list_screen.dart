@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
@@ -148,10 +149,66 @@ class DocumentListScreen extends ConsumerWidget {
                                     color: SahaayiColors.textSecondary),
                               ),
                             ],
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SahaayiColors.primary,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14)),
+                                    ),
+                                    icon: const Icon(Icons.volume_up_rounded,
+                                        size: 20),
+                                    label: const Text(
+                                      'വായിക്കുക (Read)',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'രേഖയിലെ വിവരങ്ങൾ വായിച്ചു കേൾപ്പിക്കുന്നു...'),
+                                          backgroundColor:
+                                              SahaayiColors.primaryDark,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                IconButton(
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: SahaayiColors.secondary,
+                                    padding: const EdgeInsets.all(12),
+                                  ),
+                                  icon: const Icon(Icons.copy_rounded,
+                                      color: SahaayiColors.primaryDark),
+                                  tooltip: 'കോപ്പി ചെയ്യുക',
+                                  onPressed: () {
+                                    final txt = doc.extractedText ??
+                                        doc.originalFilename;
+                                    Clipboard.setData(ClipboardData(text: txt));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content:
+                                              Text('വിവരങ്ങൾ കോപ്പി ചെയ്തു!')),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
                             SizedBox(
                               width: double.infinity,
-                              height: 52,
+                              height: 48,
                               child: OutlinedButton(
                                 onPressed: () => Navigator.pop(ctx),
                                 child: const Text('അടയ്ക്കുക (Close)'),

@@ -42,7 +42,8 @@ class FieldMatchProposalModel {
       profileFieldName: json['profile_field_name'] as String? ?? '',
       proposedValue: json['proposed_value'] as String? ?? '',
       confidenceScore: (json['confidence_score'] as num?)?.toDouble() ?? 1.0,
-      requiresUserConfirmation: json['requires_user_confirmation'] as bool? ?? true,
+      requiresUserConfirmation:
+          json['requires_user_confirmation'] as bool? ?? true,
     );
   }
 

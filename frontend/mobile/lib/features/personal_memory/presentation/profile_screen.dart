@@ -1,12 +1,153 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../shared/widgets/accessible_card.dart';
+import '../../../shared/widgets/sahaayi_button.dart';
 import '../providers/profile_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
+
+  void _showEditFieldDialog(
+      BuildContext context, WidgetRef ref, String field, String currentValue) {
+    final controller = TextEditingController(text: currentValue);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          field,
+          style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: SahaayiColors.textMain),
+        ),
+        content: TextField(
+          controller: controller,
+          style: const TextStyle(fontSize: 17, color: SahaayiColors.textMain),
+          decoration: InputDecoration(
+            labelText: 'വിവരം മാറ്റുക (Edit Value)',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('റദ്ദാക്കുക (Cancel)'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: SahaayiColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () {
+              final newVal = controller.text.trim();
+              if (newVal.isNotEmpty) {
+                ref
+                    .read(profileNotifierProvider.notifier)
+                    .upsertField(field, newVal);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('വിവരം വിജയകരമായി പുതുക്കി!'),
+                    backgroundColor: SahaayiColors.success,
+                  ),
+                );
+              }
+              Navigator.pop(ctx);
+            },
+            child: const Text('സേവ് ചെയ്യുക (Save)'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddFieldSheet(BuildContext context, WidgetRef ref) {
+    final fieldCtrl = TextEditingController();
+    final valueCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'പുതിയ വിവരം ചേർക്കുക (Add Field)',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+                color: SahaayiColors.textMain,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: fieldCtrl,
+              decoration: InputDecoration(
+                labelText: 'വിവരത്തിന്റെ പേര് (Field Name)',
+                hintText: 'ഉദാ: പെൻഷൻ നമ്പർ / ആധാർ / റേഷൻ കാർഡ്',
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: valueCtrl,
+              decoration: InputDecoration(
+                labelText: 'വിവരം (Value)',
+                hintText: 'നമ്പർ അല്ലെങ്കിൽ വിവരങ്ങൾ',
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SahaayiButton(
+              label: 'സേവ് ചെയ്യുക (Save to Memory)',
+              icon: Icons.check_circle_outline_rounded,
+              onPressed: () {
+                final name = fieldCtrl.text.trim();
+                final val = valueCtrl.text.trim();
+                if (name.isEmpty || val.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('എല്ലാ വിവരങ്ങളും നൽകുക')),
+                  );
+                  return;
+                }
+                ref
+                    .read(profileNotifierProvider.notifier)
+                    .upsertField(name, val);
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('വിവരം വിജയകരമായി ചേർത്തു!'),
+                    backgroundColor: SahaayiColors.success,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -111,13 +252,24 @@ class ProfileScreen extends ConsumerWidget {
 
                 const SizedBox(height: 24),
 
-                const Text(
-                  'പരിശോധിച്ചുറപ്പിച്ച വിവരങ്ങൾ (Verified Memory)',
-                  style: TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.bold,
-                    color: SahaayiColors.textMain,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'പരിശോധിച്ചുറപ്പിച്ച വിവരങ്ങൾ',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                        color: SahaayiColors.textMain,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline_rounded,
+                          color: SahaayiColors.primaryDark, size: 28),
+                      tooltip: 'പുതിയ വിവരം ചേർക്കുക',
+                      onPressed: () => _showAddFieldSheet(context, ref),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 const Text(
@@ -132,6 +284,8 @@ class ProfileScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: AccessibleCard(
                       backgroundColor: Colors.white,
+                      onTap: () => _showEditFieldDialog(
+                          context, ref, f['field']!, f['value']!),
                       child: Row(
                         children: [
                           Container(
@@ -168,6 +322,20 @@ class ProfileScreen extends ConsumerWidget {
                               ],
                             ),
                           ),
+                          IconButton(
+                            icon: const Icon(Icons.copy_rounded,
+                                size: 20, color: SahaayiColors.textSecondary),
+                            tooltip: 'കോപ്പി ചെയ്യുക',
+                            onPressed: () {
+                              Clipboard.setData(
+                                  ClipboardData(text: f['value']!));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('${f['field']} കോപ്പി ചെയ്തു!')),
+                              );
+                            },
+                          ),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
@@ -197,6 +365,17 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   );
                 }),
+
+                const SizedBox(height: 16),
+
+                // Button to add information
+                SahaayiButton(
+                  label: 'പുതിയ വിവരം ചേർക്കുക (Add Information)',
+                  icon: Icons.add_rounded,
+                  backgroundColor: SahaayiColors.secondary,
+                  textColor: SahaayiColors.primaryDark,
+                  onPressed: () => _showAddFieldSheet(context, ref),
+                ),
 
                 const SizedBox(height: 20),
 
@@ -235,6 +414,7 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
+                const SizedBox(height: 24),
               ],
             );
           },

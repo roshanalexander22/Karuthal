@@ -40,7 +40,8 @@ class ReminderModel {
       instructionsMl: json['instructions_ml'] as String? ?? 'ഭക്ഷണത്തിന് ശേഷം',
       reminderType: json['reminder_type'] as String? ?? 'MEDICINE',
       scheduledTime: json['scheduled_time'] != null
-          ? DateTime.tryParse(json['scheduled_time'] as String) ?? DateTime.now()
+          ? DateTime.tryParse(json['scheduled_time'] as String) ??
+              DateTime.now()
           : DateTime.now(),
       recurrenceRule: json['recurrence_rule'] as String? ?? 'DAILY',
       isActive: json['is_active'] as bool? ?? true,

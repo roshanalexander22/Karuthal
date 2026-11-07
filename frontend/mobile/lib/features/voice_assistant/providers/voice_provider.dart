@@ -43,11 +43,13 @@ class VoiceNotifier extends StateNotifier<VoiceState> {
   final VoiceRepository _repository;
   final TTSService _ttsService;
 
-  VoiceNotifier(this._repository, this._ttsService) : super(const VoiceState()) {
+  VoiceNotifier(this._repository, this._ttsService)
+      : super(const VoiceState()) {
     // Initial welcome message
     final welcome = VoiceMessage(
       id: 'welcome',
-      text: 'നമസ്കാരം! ഞാൻ താങ്കളുടെ സഹായി ആണ്. എന്തെങ്കിലും ചോദിക്കാനോ സഹായത്തിനോ സംസാരിക്കാം.',
+      text:
+          'നമസ്കാരം! ഞാൻ താങ്കളുടെ സഹായി ആണ്. എന്തെങ്കിലും ചോദിക്കാനോ സഹായത്തിനോ സംസാരിക്കാം.',
       isUser: false,
       timestamp: DateTime.now(),
       intent: 'GREETING',
@@ -74,7 +76,8 @@ class VoiceNotifier extends StateNotifier<VoiceState> {
 
     try {
       final res = await _repository.sendVoiceChat(message: queryText);
-      final replyText = res['assistant_reply'] as String? ?? 'ശരി, ഞാൻ സഹായിക്കാം.';
+      final replyText =
+          res['assistant_reply'] as String? ?? 'ശരി, ഞാൻ സഹായിക്കാം.';
       final audioB64 = res['audio_base64'] as String?;
       final intent = res['intent'] as String?;
       final action = res['action'] as String?;

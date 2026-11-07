@@ -39,7 +39,8 @@ class FallRepository {
 
   Future<void> cancelFallEvent(String eventId) async {
     try {
-      await _apiClient.post<dynamic>('${ApiEndpoints.fallSettings}/events/$eventId/cancel');
+      await _apiClient
+          .post<dynamic>('${ApiEndpoints.fallSettings}/events/$eventId/cancel');
     } catch (e) {
       AppLogger.e('Fall cancel error: $e');
     }

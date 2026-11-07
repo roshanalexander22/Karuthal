@@ -62,7 +62,8 @@ class FallNotifier extends StateNotifier<FallDetectionState> {
     state = state.copyWith(
       countdownActive: true,
       remainingSeconds: 30,
-      currentEventId: eventId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      currentEventId:
+          eventId ?? DateTime.now().millisecondsSinceEpoch.toString(),
       sosDispatched: false,
     );
 
