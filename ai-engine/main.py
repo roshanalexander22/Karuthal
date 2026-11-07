@@ -11,11 +11,12 @@ from speech_recognition.asr_service import ASRService
 from text_to_speech.tts_service import TTSService
 from intent_detection.intent_service import IntentDetectionService
 from transcription.transcription_service import AudioTranscriptionService
+from fall_detection.fall_detector import FallDetector
 
 app = FastAPI(
     title="Sahaayi AI Engine",
     version="0.1.0",
-    description="Microservice for ASR, TTS, OCR, Transcription, and LLM-driven accessibility reasoning"
+    description="Microservice for ASR, TTS, OCR, Transcription, Fall Detection, and LLM-driven accessibility reasoning"
 )
 
 app.add_middleware(
@@ -80,6 +81,9 @@ class TranscriptionProcessResponse(BaseModel):
     summary: str
     segments: List[Dict[str, Any]]
 
+class TelemetryPayload(BaseModel):
+    readings: List[Dict[str, float]]
+
 @app.get("/health")
 async def health_check():
     return {
@@ -92,6 +96,7 @@ async def health_check():
             "tts": "Indic-TTS / DhVaani",
             "transcription": "Malayalam Conformer / Whisper Audio",
             "summarizer": "Indic-BART / Gemini",
+            "fall_detection": "3-Phase Biomechanical Threshold Analyzer",
             "llm": "Google Gemini"
         }
     }
@@ -218,3 +223,8 @@ async def process_audio_transcription(
 async def summarize_text(payload: SummarizeRequest):
     summary = AudioTranscriptionService.generate_summary(payload.full_text)
     return {"summary": summary}
+
+# Fall Telemetry Analysis
+@app.post("/fall/analyze")
+async def analyze_fall_telemetry(payload: TelemetryPayload):
+    return FallDetector.evaluate_telemetry(payload.readings)

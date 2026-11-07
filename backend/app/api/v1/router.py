@@ -35,5 +35,6 @@ api_router.include_router(transcription_router, prefix="/transcription",  tags=[
 api_router.include_router(voice_router,          prefix="/voice",          tags=["Voice Assistant"])
 api_router.include_router(voice_router,          prefix="/tts",            tags=["Text-to-Speech"])
 api_router.include_router(fall_detection_router,prefix="/fall-detection", tags=["Fall Detection"])
+api_router.include_router(fall_detection_router,prefix="/fall",           tags=["Fall Detection"])
 api_router.include_router(emergency_router,     prefix="/emergency",      tags=["Emergency"])
 api_router.include_router(caregiver_router,     prefix="/caregiver",      tags=["Caregiver"])
