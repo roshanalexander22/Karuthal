@@ -57,9 +57,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     logger.info("Sahaayi API starting up …")
     logger.info("Environment: %s", settings.APP_ENV)
 
-    # Verify DB connectivity (raises on failure so the container restarts)
-    async with engine.connect() as conn:  # noqa: F841
-        logger.info("Database connection verified.")
+    # Verify DB connectivity (gracefully warn in development if DB is offline)
+    try:
+        async with engine.connect() as conn:  # noqa: F841
+            logger.info("Database connection verified.")
+    except Exception as exc:
+        if settings.APP_ENV == "development":
+            logger.warning("Database connection failed (running in dev mode without active DB): %s", exc)
+        else:
+            raise exc
 
     logger.info("Sahaayi API is ready.")
 
@@ -203,6 +209,7 @@ def create_app() -> FastAPI:
         """
         return {
             "status": "ok",
+            "app": "Sahaayi API",
             "version": "1.0.0",
             "environment": settings.APP_ENV,
         }

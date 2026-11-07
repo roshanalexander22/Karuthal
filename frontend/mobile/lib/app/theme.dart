@@ -42,7 +42,6 @@ abstract final class SahaayiTheme {
           fontSize: size,
           fontWeight: weight,
           color: baseColor,
-          fontFamilyFallback: const ['NotoSansMalayalam'],
         );
 
     return TextTheme(
@@ -104,7 +103,7 @@ abstract final class SahaayiTheme {
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: Colors.white,
-          fontFamilyFallback: const ['NotoSansMalayalam'],
+
         ),
         iconTheme: const IconThemeData(size: 28, color: Colors.white),
       ),
@@ -174,19 +173,19 @@ abstract final class SahaayiTheme {
         labelStyle: GoogleFonts.notoSans(
           fontSize: 16,
           color: const Color(0xFF555555),
-          fontFamilyFallback: const ['NotoSansMalayalam'],
+
         ),
         hintStyle: GoogleFonts.notoSans(
           fontSize: 16,
           color: const Color(0xFF999999),
-          fontFamilyFallback: const ['NotoSansMalayalam'],
+
         ),
         errorStyle: GoogleFonts.notoSans(
           fontSize: 14,
           color: _errorColor,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: _lightSurface,
@@ -210,7 +209,8 @@ abstract final class SahaayiTheme {
         unselectedItemColor: Color(0xFF777777),
         selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         unselectedLabelStyle: TextStyle(fontSize: 13),
-        iconSize: 28,
+        selectedIconTheme: const IconThemeData(size: 28),
+        unselectedIconTheme: const IconThemeData(size: 28),
         showUnselectedLabels: true,
       ),
     );
@@ -241,7 +241,7 @@ abstract final class SahaayiTheme {
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: _darkPrimaryColor,
-          fontFamilyFallback: const ['NotoSansMalayalam'],
+
         ),
         iconTheme: const IconThemeData(size: 28, color: _darkPrimaryColor),
       ),
