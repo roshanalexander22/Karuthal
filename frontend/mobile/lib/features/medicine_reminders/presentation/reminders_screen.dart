@@ -69,7 +69,9 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                             r['time'].toString().contains('PM')
                         ? r['time'].toString()
                         : 'സമയം: ${r['time']}',
-                    "isTaken": _completedIds.contains(r['id'].toString()),
+                    "isActive": (r['isActive'] as bool?) ?? true,
+                    "isTaken": _completedIds.contains(r['id'].toString()) ||
+                        (r['isTaken'] == true),
                   }).toList()
                 : [
                     {
@@ -77,6 +79,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                       "title": "പ്രഷർ മരുന്ന് (Telmisartan 40mg)",
                       "dosage": "1 ഗുളിക • ഭക്ഷണത്തിന് ശേഷം",
                       "time": "രാവിലെ 08:00 AM",
+                      "isActive": true,
                       "isTaken": _completedIds.contains('1'),
                     },
                     {
@@ -84,6 +87,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                       "title": "ഷുഗർ മരുന്ന് (Metformin 500mg)",
                       "dosage": "1 ഗുളിക • ഭക്ഷണത്തിന് മുൻപ്",
                       "time": "ഉച്ചയ്ക്ക് 01:30 PM",
+                      "isActive": true,
                       "isTaken": _completedIds.contains('2'),
                     },
                     {
@@ -91,6 +95,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                       "title": "കൊളസ്ട്രോൾ ഗുളിക (Atorvastatin 10mg)",
                       "dosage": "1 ഗുളിക • ഉറങ്ങാൻ നേരം",
                       "time": "രാത്രി 09:00 PM",
+                      "isActive": true,
                       "isTaken": _completedIds.contains('3'),
                     },
                   ];
@@ -139,6 +144,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
 
                 ...activeReminders.map((rem) {
                   final isTaken = rem['isTaken'] as bool;
+                  final isActive = rem['isActive'] as bool? ?? true;
                   final id = rem['id'] as String;
 
                   void toggleTaken() {
@@ -157,105 +163,239 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                         );
                       }
                     });
+                    ref
+                        .read(reminderNotifierProvider.notifier)
+                        .acknowledgeDose(id);
                   }
 
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: AccessibleCard(
-                      onTap: toggleTaken,
-                      backgroundColor:
-                          isTaken ? const Color(0xFFF1F5F9) : Colors.white,
-                      border: isTaken
-                          ? BorderSide(color: Colors.grey.shade300)
-                          : const BorderSide(
-                              color: SahaayiColors.border, width: 1.5),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              color: isTaken
-                                  ? Colors.grey.shade200
-                                  : SahaayiColors.accent,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Icon(
-                              Icons.medication_rounded,
-                              color: isTaken
-                                  ? Colors.grey
-                                  : const Color(0xFF2B6CB0),
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.only(bottom: 14.0),
+                    child: Opacity(
+                      opacity: isActive ? 1.0 : 0.65,
+                      child: AccessibleCard(
+                        onTap: isActive ? toggleTaken : null,
+                        backgroundColor: !isActive
+                            ? const Color(0xFFF1F5F9)
+                            : (isTaken
+                                ? const Color(0xFFF8FAFC)
+                                : Colors.white),
+                        border: !isActive
+                            ? BorderSide(color: Colors.grey.shade400, width: 1)
+                            : (isTaken
+                                ? BorderSide(
+                                    color: SahaayiColors.success.withAlpha(120),
+                                    width: 1.5)
+                                : const BorderSide(
+                                    color: SahaayiColors.border, width: 1.5)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Top Row: Active/Off Switch & Status Badge
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  rem['title'] as String,
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: isTaken
-                                        ? SahaayiColors.textSecondary
-                                        : SahaayiColors.textMain,
-                                    decoration: isTaken
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  rem['dosage'] as String,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isTaken
-                                        ? Colors.grey
-                                        : SahaayiColors.textSecondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 3),
+                                      horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: isTaken
-                                        ? Colors.grey.shade200
-                                        : SahaayiColors.secondary,
-                                    borderRadius: BorderRadius.circular(8),
+                                    color: isActive
+                                        ? SahaayiColors.secondary
+                                        : Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Text(
-                                    rem['time'] as String,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: isTaken
-                                          ? Colors.grey
-                                          : SahaayiColors.primaryDark,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        isActive
+                                            ? Icons.notifications_active_rounded
+                                            : Icons.notifications_off_rounded,
+                                        size: 16,
+                                        color: isActive
+                                            ? SahaayiColors.primaryDark
+                                            : Colors.grey.shade700,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        isActive
+                                            ? 'ഓർമ്മപ്പെടുത്തൽ സജീവം'
+                                            : 'ഓർമ്മപ്പെടുത്തൽ ഓഫാക്കി',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: isActive
+                                              ? SahaayiColors.primaryDark
+                                              : Colors.grey.shade700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      isActive ? 'ഓൺ' : 'ഓഫ്',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: isActive
+                                            ? SahaayiColors.primaryDark
+                                            : Colors.grey.shade600,
+                                      ),
                                     ),
-                                  ),
+                                    const SizedBox(width: 4),
+                                    Switch(
+                                      value: isActive,
+                                      activeThumbColor: SahaayiColors.primary,
+                                      onChanged: (val) {
+                                        ref
+                                            .read(reminderNotifierProvider
+                                                .notifier)
+                                            .toggleActive(id, val);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(val
+                                                ? '${rem['title']} ഓർമ്മപ്പെടുത്തൽ സജീവമാക്കി!'
+                                                : '${rem['title']} ഓർമ്മപ്പെടുത്തൽ ഓഫാക്കി!'),
+                                            backgroundColor: val
+                                                ? SahaayiColors.success
+                                                : Colors.grey.shade800,
+                                            duration:
+                                                const Duration(seconds: 2),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                          Icons.delete_outline_rounded,
+                                          color: Colors.grey,
+                                          size: 20),
+                                      tooltip: 'നീക്കം ചെയ്യുക',
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () {
+                                        ref
+                                            .read(reminderNotifierProvider
+                                                .notifier)
+                                            .deleteReminder(id);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'മരുന്ന് ഓർമ്മപ്പെടുത്തൽ നീക്കം ചെയ്തു.'),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Action to mark taken
-                          IconButton(
-                            iconSize: 32,
-                            icon: Icon(
-                              isTaken
-                                  ? Icons.check_circle_rounded
-                                  : Icons.radio_button_unchecked_rounded,
-                              color: isTaken
-                                  ? SahaayiColors.success
-                                  : SahaayiColors.primary,
+                            const Divider(height: 16),
+
+                            // Main Reminder Content Row
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: isTaken
+                                        ? Colors.grey.shade200
+                                        : SahaayiColors.accent,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Icon(
+                                    Icons.medication_rounded,
+                                    color: isTaken
+                                        ? Colors.grey
+                                        : const Color(0xFF2B6CB0),
+                                    size: 26,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        rem['title'] as String,
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                          color: isTaken || !isActive
+                                              ? SahaayiColors.textSecondary
+                                              : SahaayiColors.textMain,
+                                          decoration: isTaken
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        rem['dosage'] as String,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: isTaken || !isActive
+                                              ? Colors.grey
+                                              : SahaayiColors.textSecondary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: isTaken || !isActive
+                                              ? Colors.grey.shade200
+                                              : SahaayiColors.secondary,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          rem['time'] as String,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            color: isTaken || !isActive
+                                                ? Colors.grey
+                                                : SahaayiColors.primaryDark,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+
+                                // Action to mark taken
+                                IconButton(
+                                  iconSize: 34,
+                                  tooltip: isTaken
+                                      ? 'കഴിച്ചതായി രേഖപ്പെടുത്തി'
+                                      : 'കഴിച്ചതായി അടയാളപ്പെടുത്തുക',
+                                  icon: Icon(
+                                    isTaken
+                                        ? Icons.check_circle_rounded
+                                        : Icons.radio_button_unchecked_rounded,
+                                    color: isTaken
+                                        ? SahaayiColors.success
+                                        : (isActive
+                                            ? SahaayiColors.primary
+                                            : Colors.grey),
+                                  ),
+                                  onPressed: isActive ? toggleTaken : null,
+                                ),
+                              ],
                             ),
-                            onPressed: toggleTaken,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );

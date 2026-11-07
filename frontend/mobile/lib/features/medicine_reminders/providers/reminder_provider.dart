@@ -123,6 +123,8 @@ final remindersListProvider =
             'type': r.reminderType,
             'dosage': r.dosage,
             'instructions': r.instructionsMl,
+            'isActive': r.isActive,
+            'isTaken': r.isTakenToday,
           })
       .toList();
 });

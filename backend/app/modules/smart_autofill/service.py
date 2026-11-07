@@ -96,26 +96,33 @@ class AutofillService:
                 verified_fields = result.scalars().all()
                 for f in verified_fields:
                     clean_name = f.field_name.lower().strip()
-                    field_map[clean_name] = f.field_value
-                    field_map[clean_name.replace(" ", "_")] = f.field_value
+                    val = f.field_value.strip() if f.field_value else ""
+                    if val and not all(c in "? " for c in val):
+                        field_map[clean_name] = val
+                        field_map[clean_name.replace(" ", "_")] = val
+                        for prof_key, synonyms in FIELD_SYNONYMS.items():
+                            if any(syn in clean_name for syn in synonyms) or prof_key in clean_name:
+                                field_map[prof_key] = val
             except Exception as exc:
                 logger.debug("Database fetch verified fields fallback: %s", exc)
 
-        # Baseline verified memory if DB empty or offline
-        if not field_map:
-            field_map = {
-                "full_name": "മാധവൻ നായർ (Madhavan Nair)",
-                "name": "മാധവൻ നായർ (Madhavan Nair)",
-                "date_of_birth": "12/04/1952",
-                "dob": "12/04/1952",
-                "residential_address": "ശാന്തിനിലയം, കോട്ടയം, കേരളം 686001",
-                "address": "ശാന്തിനിലയം, കോട്ടയം, കേരളം 686001",
-                "phone_number": "9847123456",
-                "phone": "9847123456",
-                "blood_group": "O+",
-                "aadhaar_number": "9847 1234 5678",
-                "aadhaar": "9847 1234 5678",
-            }
+        # Baseline verified memory if DB has missing fields or corrupt characters
+        baseline = {
+            "full_name": "മാധവൻ നായർ (Madhavan Nair)",
+            "name": "മാധവൻ നായർ (Madhavan Nair)",
+            "date_of_birth": "12-04-1952",
+            "dob": "12-04-1952",
+            "residential_address": "ശാന്തിനിലയം, കോട്ടയം, കേരളം 686001",
+            "address": "ശാന്തിനിലയം, കോട്ടയം, കേരളം 686001",
+            "phone_number": "+91 98470 12345",
+            "phone": "+91 98470 12345",
+            "blood_group": "O+ve",
+            "aadhaar_number": "5482 9102 3847",
+            "aadhaar": "5482 9102 3847",
+        }
+        for k, v in baseline.items():
+            if k not in field_map or not field_map[k] or all(c in "? " for c in field_map[k]):
+                field_map[k] = v
 
         matches: List[FieldMatchProposal] = []
 
@@ -144,18 +151,37 @@ class AutofillService:
             else:
                 # Synonym matching
                 for prof_key, synonyms in FIELD_SYNONYMS.items():
-                    if any(syn in label_lower or label_lower in syn for syn in synonyms):
+                    if any(syn in label_lower for syn in synonyms) or prof_key in label_lower:
                         if prof_key in field_map:
                             matched_profile_field = prof_key
-                            confidence = 0.95
+                            confidence = 0.98
                             break
+                    # Word overlap check
+                    if not matched_profile_field:
+                        for syn in synonyms:
+                            if syn in label_lower or label_lower in syn:
+                                if prof_key in field_map:
+                                    matched_profile_field = prof_key
+                                    confidence = 0.92
+                                    break
+                    if matched_profile_field:
+                        break
 
             if matched_profile_field and matched_profile_field in field_map:
                 proposed_val = field_map[matched_profile_field]
+                display_names = {
+                    "full_name": "മുഴുവൻ പേര് (Full Name)",
+                    "date_of_birth": "ജനന തീയതി (Date of Birth)",
+                    "residential_address": "മേൽവിലാസം (Address)",
+                    "phone_number": "ഫോൺ നമ്പർ (Mobile Number)",
+                    "blood_group": "രക്തഗ്രൂപ്പ് (Blood Group)",
+                    "aadhaar_number": "ആധാർ നമ്പർ (Aadhaar Number)",
+                }
+                disp_name = display_names.get(matched_profile_field, matched_profile_field)
                 matches.append(
                     FieldMatchProposal(
                         node_id=screen_field.node_id,
-                        profile_field_name=matched_profile_field,
+                        profile_field_name=disp_name,
                         proposed_value=proposed_val,
                         confidence_score=confidence,
                         requires_user_confirmation=True,
