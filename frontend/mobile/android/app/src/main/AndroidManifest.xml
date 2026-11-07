@@ -29,13 +29,46 @@
             android:windowSoftInputMode="adjustResize">
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+              android:resource="@style/NormalTheme" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- Sahaayi Accessibility Service -->
+        <service
+            android:name=".accessibility.SahaayiAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- Sahaayi Autofill Service -->
+        <service
+            android:name=".autofill.SahaayiAutofillService"
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.autofill.AutofillService" />
+            </intent-filter>
+        </service>
+
+        <!-- Sensor Monitoring Foreground Service -->
+        <service
+            android:name=".sensors.SensorMonitoringService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
+
+        <!-- Reminder Alarm Receiver -->
+        <receiver
+            android:name=".notifications.ReminderReceiver"
+            android:exported="false" />
 
         <meta-data
             android:name="flutterEmbedding"

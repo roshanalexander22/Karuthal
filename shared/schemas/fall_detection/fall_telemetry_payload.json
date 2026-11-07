@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "confidence_score": {
+      "title": "Confidence Score",
+      "type": "number"
+    },
+    "sensor_summary": {
+      "additionalProperties": true,
+      "title": "Sensor Summary",
+      "type": "object"
+    },
+    "location_lat": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Location Lat"
+    },
+    "location_lng": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Location Lng"
+    },
+    "was_cancelled_by_user": {
+      "default": false,
+      "title": "Was Cancelled By User",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "confidence_score",
+    "sensor_summary"
+  ],
+  "title": "FallEventPayload",
+  "type": "object"
+}

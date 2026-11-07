@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "user_id": {
+      "format": "uuid",
+      "title": "User Id",
+      "type": "string"
+    },
+    "detected_at": {
+      "format": "date-time",
+      "title": "Detected At",
+      "type": "string"
+    },
+    "confidence_score": {
+      "title": "Confidence Score",
+      "type": "number"
+    },
+    "confirmed": {
+      "title": "Confirmed",
+      "type": "boolean"
+    },
+    "false_alarm": {
+      "title": "False Alarm",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "detected_at",
+    "confidence_score",
+    "confirmed",
+    "false_alarm"
+  ],
+  "title": "FallEventResponse",
+  "type": "object"
+}

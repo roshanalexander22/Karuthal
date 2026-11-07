@@ -1,0 +1,65 @@
+{
+  "description": "Payload for the POST /auth/register endpoint.",
+  "properties": {
+    "full_name": {
+      "examples": [
+        "Meera Nair"
+      ],
+      "maxLength": 120,
+      "minLength": 2,
+      "title": "Full Name",
+      "type": "string"
+    },
+    "email": {
+      "examples": [
+        "meera@example.com"
+      ],
+      "format": "email",
+      "title": "Email",
+      "type": "string"
+    },
+    "password": {
+      "description": "Must be at least 8 characters.",
+      "examples": [
+        "Str0ng!Pass"
+      ],
+      "maxLength": 128,
+      "minLength": 8,
+      "title": "Password",
+      "type": "string"
+    },
+    "phone": {
+      "anyOf": [
+        {
+          "pattern": "^\\+?[0-9\\s\\-()]{7,20}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "examples": [
+        "+91 9876543210"
+      ],
+      "title": "Phone"
+    },
+    "language_preference": {
+      "default": "en",
+      "description": "BCP-47 language code (e.g. 'en', 'ml', 'hi').",
+      "examples": [
+        "ml"
+      ],
+      "maxLength": 10,
+      "title": "Language Preference",
+      "type": "string"
+    }
+  },
+  "required": [
+    "full_name",
+    "email",
+    "password"
+  ],
+  "title": "UserRegisterRequest",
+  "type": "object"
+}

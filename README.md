@@ -515,8 +515,29 @@ Automated GitHub Actions run on every push and pull request to `main` and `devel
   - Executes unit and integration tests using `pytest tests/ -v`.
 - **Frontend CI (`.github/workflows/frontend-ci.yml`)**:
   - Sets up Java 17 and Flutter stable channel.
-  - Runs static analysis with `flutter analyze`.
+  - Runs static analysis with `flutter analyze` (Zero warnings/errors policy).
   - Runs widget and component tests with `flutter test`.
+- **AI Engine CI (`.github/workflows/ai-engine-ci.yml`)**:
+  - Sets up Python 3.11, installs AI microservice requirements.
+  - Runs ruff linting and microservice health & route unit tests.
+
+### System Verification Harness
+A comprehensive automated test harness validates the entire multi-subsystem stack:
+```bash
+python scripts/verify_all.py
+```
+
+| Verification Check | Target Component | Status |
+|---|---|---|
+| **Backend Unit Tests** | `backend/` pytest | **PASSED ✓** |
+| **AI Engine Unit Tests** | `ai-engine/` pytest | **PASSED ✓** |
+| **Backend Live Health** | `GET /health` (:8000) | **PASSED ✓** |
+| **AI Engine Live Health** | `GET /health` (:8001) | **PASSED ✓** |
+| **Live User Registration** | `POST /api/v1/auth/register` | **PASSED ✓** |
+| **Live User Authentication** | `POST /api/v1/auth/login` | **PASSED ✓** |
+| **Live Protected Endpoint** | `GET /api/v1/auth/me` | **PASSED ✓** |
+| **Flutter Static Analysis** | `frontend/mobile` (0 errors, 0 warnings) | **PASSED ✓** |
+| **Flutter Widget Tests** | `frontend/mobile` widget test suite | **PASSED ✓** |
 
 ```bash
 # Run tests locally:
@@ -553,10 +574,15 @@ make lint-frontend   # Runs flutter analyze
   - Full root directory scaffolding, 196 verified files, and modular separation.
   - Shared OpenAPI 3.1 contract and relational PostgreSQL DDL.
   - CI/CD workflows and multi-service Docker configuration.
-- [ ] **Phase 1: Core Authentication & Mobile Shell**
-  - End-to-end JWT authentication with secure token storage.
-  - Verification of high-contrast Malayalam UI and screen navigation.
-- [ ] **Phase 2: Document OCR & Verified Memory Bank**
+- [x] **Phase 1: Core Authentication & Mobile Integration Foundation (Completed)**
+  - End-to-end JWT registration, login, token refresh, and user profile (`/auth/me`).
+  - All 12 SQLAlchemy 2.0 ORM models and Alembic baseline migration (`001_initial_schema`).
+  - Dual-engine compatibility: PostgreSQL 15 + SQLite dev-mode fallback.
+  - Complete 25-endpoint OpenAPI 3.1 YAML and 31 Pydantic JSON schemas.
+  - Flutter accessible widget suite (`AccessibleButton`, `AccessibleTextField`, `AccessibleCard`, `AudioControlWidget`, `ConfirmationDialog`).
+  - Android native Kotlin services wired to `FlutterChannelBridge`.
+  - Member 2 onboarding guide (`docs/MEMBER_2_ONBOARDING.md`) and 14-branch Git architecture.
+- [ ] **Phase 2: Document OCR & Verified Memory Bank (Member 2)**
   - Tesseract Malayalam language integration and prescription parsing.
   - Interactive field verification interface in Flutter.
 - [ ] **Phase 3: Malayalam Voice Assistant & TTS**

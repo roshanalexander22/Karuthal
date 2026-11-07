@@ -1,0 +1,30 @@
+{
+  "description": "JWT token pair returned on successful login or refresh.",
+  "properties": {
+    "access_token": {
+      "title": "Access Token",
+      "type": "string"
+    },
+    "refresh_token": {
+      "title": "Refresh Token",
+      "type": "string"
+    },
+    "token_type": {
+      "default": "bearer",
+      "title": "Token Type",
+      "type": "string"
+    },
+    "expires_in": {
+      "description": "Access token TTL in seconds.",
+      "title": "Expires In",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "access_token",
+    "refresh_token",
+    "expires_in"
+  ],
+  "title": "TokenResponse",
+  "type": "object"
+}

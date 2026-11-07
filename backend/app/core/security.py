@@ -13,8 +13,8 @@ import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -23,11 +23,8 @@ from app.core.exceptions import AuthenticationError
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Password hashing
+# Password hashing (native bcrypt with 72-byte safe boundary)
 # ---------------------------------------------------------------------------
-_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
 def hash_password(plain_password: str) -> str:
     """
     Hash *plain_password* with bcrypt.
@@ -38,7 +35,9 @@ def hash_password(plain_password: str) -> str:
     Returns:
         A bcrypt-hashed string safe to store in the database.
     """
-    return _pwd_context.hash(plain_password)
+    pwd_bytes = plain_password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -52,7 +51,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         ``True`` if the password matches; ``False`` otherwise.
     """
-    return _pwd_context.verify(plain_password, hashed_password)
+    try:
+        pwd_bytes = plain_password.encode("utf-8")[:72]
+        hash_bytes = hashed_password.encode("utf-8")
+        return bcrypt.checkpw(pwd_bytes, hash_bytes)
+    except Exception as exc:
+        logger.warning("Password verification encountered an error: %s", exc)
+        return False
 
 
 # ---------------------------------------------------------------------------

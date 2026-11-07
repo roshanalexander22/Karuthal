@@ -1,0 +1,94 @@
+{
+  "$defs": {
+    "ReminderResponse": {
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "user_id": {
+          "format": "uuid",
+          "title": "User Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "reminder_type": {
+          "title": "Reminder Type",
+          "type": "string"
+        },
+        "scheduled_time": {
+          "format": "date-time",
+          "title": "Scheduled Time",
+          "type": "string"
+        },
+        "recurrence_rule": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recurrence Rule"
+        },
+        "is_active": {
+          "title": "Is Active",
+          "type": "boolean"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "title",
+        "reminder_type",
+        "scheduled_time",
+        "is_active",
+        "created_at"
+      ],
+      "title": "ReminderResponse",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "reminders": {
+      "items": {
+        "$ref": "#/$defs/ReminderResponse"
+      },
+      "title": "Reminders",
+      "type": "array"
+    },
+    "total": {
+      "title": "Total",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "reminders",
+    "total"
+  ],
+  "title": "ReminderListResponse",
+  "type": "object"
+}

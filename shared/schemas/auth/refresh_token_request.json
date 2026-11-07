@@ -1,0 +1,15 @@
+{
+  "description": "Payload for the POST /auth/refresh endpoint.",
+  "properties": {
+    "refresh_token": {
+      "description": "A valid refresh JWT obtained at login.",
+      "title": "Refresh Token",
+      "type": "string"
+    }
+  },
+  "required": [
+    "refresh_token"
+  ],
+  "title": "RefreshTokenRequest",
+  "type": "object"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "type": "MEDICINE",
+    "name_en": "Medication Reminder",
+    "name_ml": "മരുന്ന് ഓർമ്മപ്പെടുത്തൽ",
+    "description": "Scheduled prescription medication alarms."
+  },
+  {
+    "type": "APPOINTMENT",
+    "name_en": "Doctor Appointment",
+    "name_ml": "ഡോക്ടർ അപ്പോയിന്റ്മെന്റ്",
+    "description": "Hospital visits and clinical consultations."
+  },
+  {
+    "type": "HEALTH_CHECK",
+    "name_en": "Health Check / Measurement",
+    "name_ml": "ആരോഗ്യ പരിശോധന",
+    "description": "Blood sugar, BP, or weight monitoring routines."
+  },
+  {
+    "type": "DAILY_TASK",
+    "name_en": "Daily Routine Task",
+    "name_ml": "പ്രതിദിന ദിനചര്യ",
+    "description": "Water intake, morning walks, or exercise."
+  }
+]

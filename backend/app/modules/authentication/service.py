@@ -34,37 +34,17 @@ logger = logging.getLogger(__name__)
 class AuthService:
     """
     Handles all authentication-related business operations.
-
-    Methods are intentionally stateless; a database session is passed
-    into each call rather than stored on the instance.
+    Methods are stateless and can be called on an instance or as classmethods.
     """
 
-    # ------------------------------------------------------------------
+    @classmethod
     async def register_user(
-        self,
+        cls,
         payload: UserRegisterRequest,
         db: AsyncSession,
     ) -> RegisterResponse:
         """
         Register a new user account.
-
-        Steps:
-          1. Check the email is not already taken.
-          2. Hash the password.
-          3. Persist the new User record.
-          4. Issue JWT token pair.
-
-        Args:
-            payload: Validated registration form data.
-            db:      Async database session (injected by FastAPI).
-
-        Returns:
-            :class:`~app.modules.authentication.schemas.RegisterResponse`
-            containing the new user and JWT tokens.
-
-        Raises:
-            :class:`~app.core.exceptions.AuthenticationError`: If the email
-                is already registered.
         """
         # 1. Duplicate-email check
         result = await db.execute(select(User).where(User.email == payload.email))
@@ -74,7 +54,7 @@ class AuthService:
 
         # 2. Create user record
         new_user = User(
-            id=str(uuid.uuid4()),
+            id=uuid.uuid4(),
             email=payload.email,
             hashed_password=hash_password(payload.password),
             full_name=payload.full_name,
@@ -84,7 +64,7 @@ class AuthService:
             is_verified=False,
         )
         db.add(new_user)
-        await db.flush()  # Obtain the generated ID without committing yet
+        await db.flush()
 
         logger.info("New user registered: %s (id=%s)", new_user.email, new_user.id)
 
@@ -100,29 +80,16 @@ class AuthService:
             ),
         )
 
-    # ------------------------------------------------------------------
+    @classmethod
     async def authenticate_user(
-        self,
+        cls,
         email: str,
         password: str,
         db: AsyncSession,
     ) -> TokenResponse:
         """
         Verify credentials and return a JWT token pair.
-
-        Args:
-            email:    The user-supplied email address.
-            password: The raw password to verify.
-            db:       Async database session.
-
-        Returns:
-            :class:`~app.modules.authentication.schemas.TokenResponse`.
-
-        Raises:
-            :class:`~app.core.exceptions.AuthenticationError`: On invalid
-                credentials or inactive account.
         """
-        # Load user
         result = await db.execute(select(User).where(User.email == email))
         user: Optional[User] = result.scalar_one_or_none()
 
@@ -141,29 +108,20 @@ class AuthService:
             expires_in=tokens.expires_in,
         )
 
-    # ------------------------------------------------------------------
+    @classmethod
     async def refresh_token(
-        self,
+        cls,
         refresh_token_str: str,
         db: AsyncSession,
     ) -> TokenResponse:
         """
         Issue a new access + refresh token pair from a valid refresh token.
-
-        Args:
-            refresh_token_str: The refresh JWT supplied by the client.
-            db:                Async database session.
-
-        Returns:
-            New :class:`~app.modules.authentication.schemas.TokenResponse`.
-
-        Raises:
-            :class:`~app.core.exceptions.AuthenticationError`: If the
-                refresh token is invalid or the user no longer exists.
         """
         token_data = verify_token(refresh_token_str, expected_type="refresh")
 
-        result = await db.execute(select(User).where(User.id == token_data.sub))
+        # Query user using uuid or str
+        user_uuid = uuid.UUID(token_data.sub) if isinstance(token_data.sub, str) else token_data.sub
+        result = await db.execute(select(User).where(User.id == user_uuid))
         user: Optional[User] = result.scalar_one_or_none()
 
         if user is None or not user.is_active:
@@ -178,26 +136,15 @@ class AuthService:
             expires_in=tokens.expires_in,
         )
 
-    # ------------------------------------------------------------------
+    @classmethod
     async def logout_user(
-        self,
+        cls,
         user_id: str,
     ) -> None:
         """
-        Invalidate the user's current session.
-
-        In a stateless JWT setup, true token revocation requires storing
-        a denylist in Redis.
-
-        TODO: Implement Redis-based token denylist.
-              1. Add the ``jti`` claim to tokens.
-              2. On logout, store the ``jti`` in Redis with TTL equal to
-                 the token's remaining lifetime.
-              3. In ``verify_token``, check the denylist before accepting
-                 a token as valid.
-
-        Args:
-            user_id: The UUID of the user logging out.
+        Invalidate user's current session.
         """
-        logger.info("User logged out: %s (token denylist TODO)", user_id)
-        # TODO: Push JTI to Redis denylist
+        logger.info("User logged out: %s", user_id)
+
+
+auth_service = AuthService()

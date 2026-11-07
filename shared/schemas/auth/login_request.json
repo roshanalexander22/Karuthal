@@ -1,0 +1,27 @@
+{
+  "description": "Payload for the POST /auth/login endpoint.",
+  "properties": {
+    "email": {
+      "examples": [
+        "meera@example.com"
+      ],
+      "format": "email",
+      "title": "Email",
+      "type": "string"
+    },
+    "password": {
+      "examples": [
+        "Str0ng!Pass"
+      ],
+      "minLength": 1,
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "email",
+    "password"
+  ],
+  "title": "UserLoginRequest",
+  "type": "object"
+}

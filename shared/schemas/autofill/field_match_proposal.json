@@ -1,0 +1,33 @@
+{
+  "properties": {
+    "node_id": {
+      "title": "Node Id",
+      "type": "string"
+    },
+    "profile_field_name": {
+      "title": "Profile Field Name",
+      "type": "string"
+    },
+    "proposed_value": {
+      "title": "Proposed Value",
+      "type": "string"
+    },
+    "confidence_score": {
+      "title": "Confidence Score",
+      "type": "number"
+    },
+    "requires_user_confirmation": {
+      "default": true,
+      "title": "Requires User Confirmation",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "node_id",
+    "profile_field_name",
+    "proposed_value",
+    "confidence_score"
+  ],
+  "title": "FieldMatchProposal",
+  "type": "object"
+}

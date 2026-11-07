@@ -1,0 +1,35 @@
+{
+  "properties": {
+    "node_id": {
+      "title": "Node Id",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "input_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": "text",
+      "title": "Input Type"
+    },
+    "is_password_or_sensitive": {
+      "default": false,
+      "title": "Is Password Or Sensitive",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "node_id",
+    "label"
+  ],
+  "title": "ScreenFormField",
+  "type": "object"
+}

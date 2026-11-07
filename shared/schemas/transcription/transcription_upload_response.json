@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "filename": {
+      "title": "Filename",
+      "type": "string"
+    },
+    "language": {
+      "title": "Language",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "filename",
+    "language",
+    "status"
+  ],
+  "title": "TranscriptionUploadResponse",
+  "type": "object"
+}

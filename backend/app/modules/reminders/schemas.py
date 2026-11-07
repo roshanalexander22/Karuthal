@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 from uuid import UUID
@@ -18,6 +18,8 @@ class ReminderUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 class ReminderResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     user_id: UUID
     title: str
@@ -27,9 +29,6 @@ class ReminderResponse(BaseModel):
     recurrence_rule: Optional[str] = None
     is_active: bool
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 class ReminderListResponse(BaseModel):
     reminders: List[ReminderResponse]

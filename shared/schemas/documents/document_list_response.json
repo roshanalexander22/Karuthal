@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "DocumentResponse": {
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "user_id": {
+          "format": "uuid",
+          "title": "User Id",
+          "type": "string"
+        },
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        },
+        "original_filename": {
+          "title": "Original Filename",
+          "type": "string"
+        },
+        "file_type": {
+          "title": "File Type",
+          "type": "string"
+        },
+        "document_category": {
+          "title": "Document Category",
+          "type": "string"
+        },
+        "ocr_status": {
+          "title": "Ocr Status",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "filename",
+        "original_filename",
+        "file_type",
+        "document_category",
+        "ocr_status",
+        "created_at"
+      ],
+      "title": "DocumentResponse",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "documents": {
+      "items": {
+        "$ref": "#/$defs/DocumentResponse"
+      },
+      "title": "Documents",
+      "type": "array"
+    },
+    "total": {
+      "title": "Total",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "documents",
+    "total"
+  ],
+  "title": "DocumentListResponse",
+  "type": "object"
+}

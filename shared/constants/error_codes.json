@@ -1,0 +1,57 @@
+{
+  "AUTHENTICATION_ERROR": {
+    "code": "authentication_error",
+    "http_status": 401,
+    "description": "Invalid or expired credentials/token."
+  },
+  "AUTHORIZATION_ERROR": {
+    "code": "authorization_error",
+    "http_status": 403,
+    "description": "Insufficient permissions for requested resource."
+  },
+  "DOCUMENT_NOT_FOUND": {
+    "code": "document_not_found",
+    "http_status": 404,
+    "description": "Requested document does not exist."
+  },
+  "DOCUMENT_PROCESSING_ERROR": {
+    "code": "document_processing_error",
+    "http_status": 422,
+    "description": "Optical or structural parsing failure."
+  },
+  "INVALID_FILE_TYPE": {
+    "code": "invalid_file_type",
+    "http_status": 415,
+    "description": "MIME type is not in permitted list."
+  },
+  "FILE_TOO_LARGE": {
+    "code": "file_too_large",
+    "http_status": 413,
+    "description": "Uploaded file exceeds maximum MB limit."
+  },
+  "PROFILE_NOT_FOUND": {
+    "code": "profile_not_found",
+    "http_status": 404,
+    "description": "Verified personal profile field not found."
+  },
+  "REMINDER_NOT_FOUND": {
+    "code": "reminder_not_found",
+    "http_status": 404,
+    "description": "Requested reminder schedule not found."
+  },
+  "TRANSCRIPTION_ERROR": {
+    "code": "transcription_error",
+    "http_status": 422,
+    "description": "Audio ASR processing failed."
+  },
+  "FALL_DETECTION_ERROR": {
+    "code": "fall_detection_error",
+    "http_status": 422,
+    "description": "Sensor telemetry could not be processed."
+  },
+  "EMERGENCY_DISPATCH_FAILED": {
+    "code": "emergency_dispatch_failed",
+    "http_status": 500,
+    "description": "Could not notify designated emergency contacts."
+  }
+}

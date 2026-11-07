@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "caregiver_email": {
+      "title": "Caregiver Email",
+      "type": "string"
+    },
+    "relationship": {
+      "title": "Relationship",
+      "type": "string"
+    },
+    "consent_given": {
+      "title": "Consent Given",
+      "type": "boolean"
+    },
+    "can_view_reminders": {
+      "title": "Can View Reminders",
+      "type": "boolean"
+    },
+    "can_view_location": {
+      "title": "Can View Location",
+      "type": "boolean"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "caregiver_email",
+    "relationship",
+    "consent_given",
+    "can_view_reminders",
+    "can_view_location",
+    "created_at"
+  ],
+  "title": "CaregiverResponse",
+  "type": "object"
+}

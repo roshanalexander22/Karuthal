@@ -1,0 +1,59 @@
+{
+  "description": "Public user representation returned after registration or login.",
+  "properties": {
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "email": {
+      "format": "email",
+      "title": "Email",
+      "type": "string"
+    },
+    "full_name": {
+      "title": "Full Name",
+      "type": "string"
+    },
+    "phone": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Phone"
+    },
+    "language_preference": {
+      "title": "Language Preference",
+      "type": "string"
+    },
+    "is_active": {
+      "title": "Is Active",
+      "type": "boolean"
+    },
+    "is_verified": {
+      "title": "Is Verified",
+      "type": "boolean"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "email",
+    "full_name",
+    "language_preference",
+    "is_active",
+    "is_verified",
+    "created_at"
+  ],
+  "title": "UserResponse",
+  "type": "object"
+}

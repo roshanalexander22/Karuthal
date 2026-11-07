@@ -134,9 +134,15 @@ async def get_current_user(
         ) from exc
 
     # Load user from database
+    import uuid as _uuid
     from sqlalchemy import select  # local import to avoid circular deps at module level
 
-    result = await db.execute(select(User).where(User.id == token_data.sub))
+    try:
+        sub_id = _uuid.UUID(token_data.sub) if isinstance(token_data.sub, str) else token_data.sub
+    except (ValueError, AttributeError):
+        sub_id = token_data.sub
+
+    result = await db.execute(select(User).where(User.id == sub_id))
     user: Optional[User] = result.scalar_one_or_none()
 
     if user is None:

@@ -1,0 +1,28 @@
+{
+  "properties": {
+    "caregiver_email": {
+      "title": "Caregiver Email",
+      "type": "string"
+    },
+    "relationship": {
+      "title": "Relationship",
+      "type": "string"
+    },
+    "can_view_reminders": {
+      "default": true,
+      "title": "Can View Reminders",
+      "type": "boolean"
+    },
+    "can_view_location": {
+      "default": false,
+      "title": "Can View Location",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "caregiver_email",
+    "relationship"
+  ],
+  "title": "CaregiverInvite",
+  "type": "object"
+}

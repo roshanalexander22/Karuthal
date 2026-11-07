@@ -1,0 +1,23 @@
+{
+  "properties": {
+    "field_name": {
+      "title": "Field Name",
+      "type": "string"
+    },
+    "field_value": {
+      "title": "Field Value",
+      "type": "string"
+    },
+    "is_verified": {
+      "default": true,
+      "title": "Is Verified",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "field_name",
+    "field_value"
+  ],
+  "title": "ProfileUpdatePayload",
+  "type": "object"
+}

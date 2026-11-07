@@ -1,0 +1,70 @@
+{
+  "$defs": {
+    "ProfileFieldItem": {
+      "properties": {
+        "field_name": {
+          "title": "Field Name",
+          "type": "string"
+        },
+        "field_value": {
+          "title": "Field Value",
+          "type": "string"
+        },
+        "field_type": {
+          "default": "TEXT",
+          "title": "Field Type",
+          "type": "string"
+        },
+        "is_verified": {
+          "default": false,
+          "title": "Is Verified",
+          "type": "boolean"
+        },
+        "confidence_score": {
+          "default": 1.0,
+          "title": "Confidence Score",
+          "type": "number"
+        },
+        "source_document_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Document Id"
+        }
+      },
+      "required": [
+        "field_name",
+        "field_value"
+      ],
+      "title": "ProfileFieldItem",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "user_id": {
+      "format": "uuid",
+      "title": "User Id",
+      "type": "string"
+    },
+    "fields": {
+      "items": {
+        "$ref": "#/$defs/ProfileFieldItem"
+      },
+      "title": "Fields",
+      "type": "array"
+    }
+  },
+  "required": [
+    "user_id",
+    "fields"
+  ],
+  "title": "UserProfileResponse",
+  "type": "object"
+}

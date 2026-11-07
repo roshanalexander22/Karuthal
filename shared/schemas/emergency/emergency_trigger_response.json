@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "alert_id": {
+      "format": "uuid",
+      "title": "Alert Id",
+      "type": "string"
+    },
+    "dispatched_contacts_count": {
+      "title": "Dispatched Contacts Count",
+      "type": "integer"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    }
+  },
+  "required": [
+    "alert_id",
+    "dispatched_contacts_count",
+    "status",
+    "message"
+  ],
+  "title": "EmergencyTriggerResponse",
+  "type": "object"
+}

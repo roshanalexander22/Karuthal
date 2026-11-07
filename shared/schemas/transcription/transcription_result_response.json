@@ -1,0 +1,86 @@
+{
+  "$defs": {
+    "TranscriptSegment": {
+      "properties": {
+        "start_time": {
+          "title": "Start Time",
+          "type": "number"
+        },
+        "end_time": {
+          "title": "End Time",
+          "type": "number"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "speaker": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speaker"
+        }
+      },
+      "required": [
+        "start_time",
+        "end_time",
+        "text"
+      ],
+      "title": "TranscriptSegment",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "language": {
+      "title": "Language",
+      "type": "string"
+    },
+    "full_text": {
+      "title": "Full Text",
+      "type": "string"
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Summary"
+    },
+    "segments": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/TranscriptSegment"
+      },
+      "title": "Segments",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "status",
+    "language",
+    "full_text"
+  ],
+  "title": "TranscriptionResultResponse",
+  "type": "object"
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">സഹായി (Sahaayi)</string>
+    <string name="accessibility_service_description">സഹായി സ്ക്രീൻ റീഡിംഗും ഫോം പൂരിപ്പിക്കലും സഹായിക്കുന്ന ആക്സസിബിലിറ്റി സർവീസ് (Sahaayi screen reading and assistive form-filling service).</string>
+    <string name="autofill_service_description">സഹായി വെരിഫൈ ചെയ്ത പ്രൊഫൈൽ വിവരങ്ങൾ ഉപയോഗിച്ച് ഫോം പൂരിപ്പിക്കൽ (Sahaayi verified profile autofill service).</string>
+    <string name="sensor_service_notification_title">സഹായി സുരക്ഷാ നിരീക്ഷണം സജീവം (Sahaayi Safety Active)</string>
+    <string name="sensor_service_notification_text">വീഴ്ചയും ശാരീരിക അടിയന്തിരാവസ്ഥയും നിരീക്ഷിക്കുന്നു (Monitoring for potential falls and distress).</string>
+</resources>

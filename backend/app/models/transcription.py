@@ -1,15 +1,14 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Text, Float, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import String, Text, Float, DateTime, ForeignKey, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from app.config.database import Base
 
 class Transcription(Base):
     __tablename__ = "transcriptions"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     source_type: Mapped[str] = mapped_column(String(64), default="MICROPHONE")
     language: Mapped[str] = mapped_column(String(8), default="ml")
     raw_text: Mapped[str] = mapped_column(Text, nullable=False)

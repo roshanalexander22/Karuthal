@@ -1,0 +1,35 @@
+{
+  "properties": {
+    "reason": {
+      "default": "SOS_BUTTON_PRESSED",
+      "title": "Reason",
+      "type": "string"
+    },
+    "location_lat": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Location Lat"
+    },
+    "location_lng": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Location Lng"
+    }
+  },
+  "title": "EmergencyTriggerRequest",
+  "type": "object"
+}

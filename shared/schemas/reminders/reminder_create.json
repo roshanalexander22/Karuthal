@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "reminder_type": {
+      "default": "MEDICINE",
+      "title": "Reminder Type",
+      "type": "string"
+    },
+    "scheduled_time": {
+      "format": "date-time",
+      "title": "Scheduled Time",
+      "type": "string"
+    },
+    "recurrence_rule": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Recurrence Rule"
+    }
+  },
+  "required": [
+    "title",
+    "scheduled_time"
+  ],
+  "title": "ReminderCreate",
+  "type": "object"
+}

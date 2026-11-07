@@ -27,14 +27,22 @@ from app.core.config import settings
 # ---------------------------------------------------------------------------
 # Engine
 # ---------------------------------------------------------------------------
-engine: AsyncEngine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=settings.DEBUG,          # Log SQL statements in debug mode
-    pool_size=10,
-    max_overflow=20,
-    pool_pre_ping=True,           # Reconnect on stale connections
-    pool_recycle=3600,            # Recycle connections every hour
-)
+_db_url = settings.DATABASE_URL
+if _db_url.startswith("sqlite"):
+    engine: AsyncEngine = create_async_engine(
+        _db_url,
+        echo=settings.DEBUG,
+        connect_args={"check_same_thread": False},
+    )
+else:
+    engine: AsyncEngine = create_async_engine(
+        _db_url,
+        echo=settings.DEBUG,          # Log SQL statements in debug mode
+        pool_size=10,
+        max_overflow=20,
+        pool_pre_ping=True,           # Reconnect on stale connections
+        pool_recycle=3600,            # Recycle connections every hour
+    )
 
 # ---------------------------------------------------------------------------
 # Session factory

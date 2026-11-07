@@ -18,7 +18,7 @@ All settings are grouped logically:
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
 
 from pydantic import AnyHttpUrl, EmailStr, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -49,18 +49,21 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # ------------------------------------------------------------------
-    # Database (PostgreSQL)
+    # Database (PostgreSQL / SQLite dev fallback)
     # ------------------------------------------------------------------
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     DB_NAME: str = "sahaayi"
     DB_USER: str = "sahaayi_user"
     DB_PASSWORD: str = "changeme"
+    DATABASE_URL_OVERRIDE: Optional[str] = None
 
     @computed_field  # type: ignore[misc]
     @property
     def DATABASE_URL(self) -> str:
-        """Async PostgreSQL URL for SQLAlchemy (asyncpg driver)."""
+        """Async database URL for SQLAlchemy."""
+        if self.DATABASE_URL_OVERRIDE:
+            return self.DATABASE_URL_OVERRIDE
         return (
             f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
@@ -69,7 +72,9 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[misc]
     @property
     def DATABASE_URL_SYNC(self) -> str:
-        """Synchronous PostgreSQL URL for Alembic migrations (psycopg2 driver)."""
+        """Synchronous database URL for Alembic migrations."""
+        if self.DATABASE_URL_OVERRIDE:
+            return self.DATABASE_URL_OVERRIDE.replace("+asyncpg", "+psycopg2").replace("+aiosqlite", "")
         return (
             f"postgresql+psycopg2://{self.DB_USER}:{self.DB_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"

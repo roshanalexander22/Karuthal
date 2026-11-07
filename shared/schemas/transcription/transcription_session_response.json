@@ -1,0 +1,24 @@
+{
+  "properties": {
+    "session_id": {
+      "format": "uuid",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "stream_url": {
+      "title": "Stream Url",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "stream_url",
+    "status"
+  ],
+  "title": "TranscriptionSessionResponse",
+  "type": "object"
+}
