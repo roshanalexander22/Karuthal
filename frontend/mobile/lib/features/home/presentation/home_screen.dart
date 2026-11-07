@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final mod = modules[index];
             return Card(
-              color: (mod['color'] as Color).withOpacity(0.12),
+              color: (mod['color'] as Color).withValues(alpha: 0.12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
                 side: BorderSide(color: mod['color'] as Color, width: 2),

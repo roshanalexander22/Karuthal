@@ -22,7 +22,7 @@ class VoiceAssistantScreen extends ConsumerWidget {
               if (state.recognizedText.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
                   child: Text(state.recognizedText, style: const TextStyle(fontSize: 20)),
                 ),
               const SizedBox(height: 48),

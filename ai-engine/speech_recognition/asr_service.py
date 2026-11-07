@@ -1,5 +1,8 @@
 from typing import Optional
-from ai-engine.speech_recognition.model_config import ASRConfig
+try:
+    from speech_recognition.model_config import ASRConfig
+except ImportError:
+    from .model_config import ASRConfig
 
 class ASRService:
     def __init__(self, config: Optional[ASRConfig] = None):

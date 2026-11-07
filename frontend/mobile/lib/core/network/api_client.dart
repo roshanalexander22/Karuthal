@@ -1,36 +1,29 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import '../../config/app_config.dart';
 import '../constants/api_endpoints.dart';
 import '../constants/app_constants.dart';
 import '../utils/logger.dart';
 import 'network_exceptions.dart';
 
-part 'api_client.g.dart';
-
 /// Riverpod provider for the shared [Dio] instance.
-@riverpod
-Dio dio(DioRef ref) => _buildDio(ref);
+final dioProvider = Provider<Dio>((ref) => _buildDio(ref));
 
 /// Riverpod provider for the [ApiClient] facade.
-@riverpod
-ApiClient apiClient(ApiClientRef ref) {
+final apiClientProvider = Provider<ApiClient>((ref) {
   final dioInstance = ref.watch(dioProvider);
   return ApiClient(dioInstance);
-}
+});
 
 // ── Dio factory ──────────────────────────────────────────────────────────────
 
 Dio _buildDio(Ref ref) {
-  final config = AppConfig.current;
   final log = AppLogger.forName('DioClient');
 
   final dio = Dio(
     BaseOptions(
-      baseUrl: config.apiBaseUrl,
+      baseUrl: AppConfig.apiBaseUrl,
       connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
       receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
       sendTimeout: const Duration(milliseconds: AppConstants.sendTimeoutMs),
@@ -46,7 +39,7 @@ Dio _buildDio(Ref ref) {
   // Add interceptors in priority order
   dio.interceptors.addAll([
     _LoggingInterceptor(log),
-    _JwtInterceptor(dio, ref),
+    _JwtInterceptor(dio),
     _ErrorInterceptor(),
   ]);
 
@@ -77,7 +70,7 @@ class _LoggingInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     _log.e(
       '✗ ${err.requestOptions.method} ${err.requestOptions.uri}',
-      error: err,
+      err,
     );
     handler.next(err);
   }
@@ -86,10 +79,9 @@ class _LoggingInterceptor extends Interceptor {
 // ── JWT Interceptor ───────────────────────────────────────────────────────────
 
 class _JwtInterceptor extends QueuedInterceptorsWrapper {
-  _JwtInterceptor(this._dio, this._ref);
+  _JwtInterceptor(this._dio);
 
   final Dio _dio;
-  final Ref _ref;
 
   static const _storage = FlutterSecureStorage();
   static const _accessKey = AppConstants.prefKeyAccessToken;

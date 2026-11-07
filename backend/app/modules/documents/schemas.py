@@ -14,8 +14,7 @@ class DocumentResponse(BaseModel):
     ocr_status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class DocumentListResponse(BaseModel):
     documents: List[DocumentResponse]

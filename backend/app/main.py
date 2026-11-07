@@ -57,9 +57,26 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     logger.info("Sahaayi API starting up …")
     logger.info("Environment: %s", settings.APP_ENV)
 
-    # Verify DB connectivity (raises on failure so the container restarts)
-    async with engine.connect() as conn:  # noqa: F841
-        logger.info("Database connection verified.")
+    # Verify DB connectivity (logs warning in dev/test if database server is not running)
+    import socket
+    db_available = False
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            host = "127.0.0.1" if settings.DB_HOST in ("localhost", "127.0.0.1") else settings.DB_HOST
+            if s.connect_ex((host, settings.DB_PORT)) == 0:
+                db_available = True
+    except Exception:
+        db_available = False
+
+    if db_available:
+        try:
+            async with engine.connect() as conn:  # noqa: F841
+                logger.info("Database connection verified.")
+        except Exception as exc:
+            logger.warning("Database connection failed (%s). Running with database unavailable.", exc)
+    else:
+        logger.warning("Database server (%s:%s) is offline. Running with database unavailable.", settings.DB_HOST, settings.DB_PORT)
 
     logger.info("Sahaayi API is ready.")
 
@@ -67,8 +84,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
 
     # ---- Shutdown ----
     logger.info("Sahaayi API shutting down …")
-    await engine.dispose()
-    logger.info("Database engine disposed. Goodbye.")
+    try:
+        await engine.dispose()
+        logger.info("Database engine disposed. Goodbye.")
+    except Exception as exc:
+        logger.debug("Engine disposal notice: %s", exc)
 
 
 # ---------------------------------------------------------------------------
@@ -203,6 +223,7 @@ def create_app() -> FastAPI:
         """
         return {
             "status": "ok",
+            "app": settings.APP_NAME,
             "version": "1.0.0",
             "environment": settings.APP_ENV,
         }

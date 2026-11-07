@@ -28,8 +28,7 @@ class ReminderResponse(BaseModel):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class ReminderListResponse(BaseModel):
     reminders: List[ReminderResponse]
