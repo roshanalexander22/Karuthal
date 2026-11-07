@@ -2,7 +2,7 @@ from __future__ import annotations
 from fastapi import FastAPI, UploadFile, File, Form, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import base64
 
 from ocr.ocr_service import OCRService
@@ -10,11 +10,12 @@ from document_extraction.document_service import DocumentExtractionService
 from speech_recognition.asr_service import ASRService
 from text_to_speech.tts_service import TTSService
 from intent_detection.intent_service import IntentDetectionService
+from transcription.transcription_service import AudioTranscriptionService
 
 app = FastAPI(
     title="Sahaayi AI Engine",
     version="0.1.0",
-    description="Microservice for ASR, TTS, OCR, and LLM-driven accessibility reasoning"
+    description="Microservice for ASR, TTS, OCR, Transcription, and LLM-driven accessibility reasoning"
 )
 
 app.add_middleware(
@@ -68,6 +69,17 @@ class VoiceProcessResponse(BaseModel):
     target_route: Optional[str] = None
     audio_base64: Optional[str] = None
 
+class SummarizeRequest(BaseModel):
+    full_text: str
+
+class TranscriptionProcessResponse(BaseModel):
+    status: str
+    language: str
+    duration_seconds: float
+    full_text: str
+    summary: str
+    segments: List[Dict[str, Any]]
+
 @app.get("/health")
 async def health_check():
     return {
@@ -78,6 +90,8 @@ async def health_check():
             "extraction": "Rule-based & Regex NER",
             "asr": "IndicConformer / Whisper",
             "tts": "Indic-TTS / DhVaani",
+            "transcription": "Malayalam Conformer / Whisper Audio",
+            "summarizer": "Indic-BART / Gemini",
             "llm": "Google Gemini"
         }
     }
@@ -181,3 +195,26 @@ async def process_voice_interaction(payload: VoiceProcessRequest):
         target_route=intent_res.get("target_route"),
         audio_base64=audio_b64
     )
+
+# Transcription Processing
+@app.post("/transcription/process", response_model=TranscriptionProcessResponse)
+async def process_audio_transcription(
+    file: Optional[UploadFile] = File(None),
+    language: str = Form("ml")
+):
+    audio_bytes = b""
+    filename = "recording.wav"
+    if file:
+        audio_bytes = await file.read()
+        filename = file.filename or filename
+
+    return await AudioTranscriptionService.transcribe_and_segment(
+        audio_bytes=audio_bytes,
+        language=language,
+        filename=filename
+    )
+
+@app.post("/transcription/summarize")
+async def summarize_text(payload: SummarizeRequest):
+    summary = AudioTranscriptionService.generate_summary(payload.full_text)
+    return {"summary": summary}

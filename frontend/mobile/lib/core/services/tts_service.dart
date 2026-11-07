@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
+import '../utils/logger.dart';
 
 final ttsServiceProvider = Provider<TTSService>((ref) {
   final service = TTSService();
@@ -14,21 +14,35 @@ class TTSService {
   final FlutterTts _flutterTts = FlutterTts();
   final AudioPlayer _player = AudioPlayer();
   bool _isNativeTtsInitialized = false;
+  bool _isPlaying = false;
+  double _speechRate = 0.85;
+
+  bool get isPlaying => _isPlaying;
+  double get speechRate => _speechRate;
 
   TTSService() {
     _initNativeTts();
+    _player.playerStateStream.listen((state) {
+      _isPlaying = state.playing && state.processingState != ProcessingState.completed;
+    });
   }
 
   Future<void> _initNativeTts() async {
     try {
       await _flutterTts.setLanguage('ml-IN');
-      await _flutterTts.setSpeechRate(0.85);
+      await _flutterTts.setSpeechRate(_speechRate);
       await _flutterTts.setVolume(1.0);
       await _flutterTts.setPitch(1.0);
       _isNativeTtsInitialized = true;
     } catch (e) {
-      debugPrint('Native TTS init warning: $e');
+      AppLogger.w('Native TTS init warning: $e');
     }
+  }
+
+  void setSpeechRate(double rate) {
+    _speechRate = rate.clamp(0.5, 1.5);
+    _player.setSpeed(_speechRate);
+    _flutterTts.setSpeechRate(_speechRate);
   }
 
   /// Play audio from base64-encoded WAV string using data URI.
@@ -38,9 +52,10 @@ class TTSService {
       await stop();
       final uri = Uri.parse('data:audio/wav;base64,$base64Wav');
       await _player.setAudioSource(AudioSource.uri(uri));
+      await _player.setSpeed(_speechRate);
       await _player.play();
     } catch (e) {
-      debugPrint('AudioPlayer error: $e');
+      AppLogger.e('TTS playback error: $e');
     }
   }
 
@@ -49,7 +64,7 @@ class TTSService {
     try {
       await _player.pause();
     } catch (e) {
-      debugPrint('AudioPlayer pause error: $e');
+      AppLogger.e('TTS pause error: $e');
     }
   }
 
@@ -58,7 +73,7 @@ class TTSService {
     try {
       await _player.play();
     } catch (e) {
-      debugPrint('AudioPlayer resume error: $e');
+      AppLogger.e('TTS resume error: $e');
     }
   }
 
@@ -67,8 +82,9 @@ class TTSService {
     try {
       await _player.stop();
       await _flutterTts.stop();
+      _isPlaying = false;
     } catch (e) {
-      debugPrint('TTS stop error: $e');
+      AppLogger.e('TTS stop error: $e');
     }
   }
 
@@ -82,7 +98,7 @@ class TTSService {
       await _flutterTts.setLanguage(language);
       await _flutterTts.speak(text);
     } catch (e) {
-      debugPrint('Local TTS error: $e');
+      AppLogger.e('Local TTS error: $e');
     }
   }
 
