@@ -209,8 +209,8 @@ abstract final class SahaayiTheme {
         unselectedItemColor: Color(0xFF777777),
         selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         unselectedLabelStyle: TextStyle(fontSize: 13),
-        selectedIconTheme: const IconThemeData(size: 28),
-        unselectedIconTheme: const IconThemeData(size: 28),
+        selectedIconTheme: IconThemeData(size: 28),
+        unselectedIconTheme: IconThemeData(size: 28),
         showUnselectedLabels: true,
       ),
     );

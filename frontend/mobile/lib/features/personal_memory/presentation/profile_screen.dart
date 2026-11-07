@@ -99,9 +99,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with SingleTicker
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(
+        title: const Text(
           'കരട് സ്ഥിരീകരിക്കുക (Verify Draft)',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,

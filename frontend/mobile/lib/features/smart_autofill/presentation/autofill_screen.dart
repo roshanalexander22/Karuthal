@@ -65,11 +65,11 @@ class _AutofillScreenState extends ConsumerState<AutofillScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.verified_user, color: Color(0xFF1B5E20), size: 30),
-                const SizedBox(width: 12),
-                const Expanded(
+                Icon(Icons.verified_user, color: Color(0xFF1B5E20), size: 30),
+                SizedBox(width: 12),
+                Expanded(
                   child: Text(
                     'വിവരങ്ങൾ പരിശോധിക്കുക (Review)',
                     style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20)),
