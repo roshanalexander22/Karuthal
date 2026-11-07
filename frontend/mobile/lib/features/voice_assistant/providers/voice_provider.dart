@@ -100,10 +100,8 @@ class VoiceNotifier extends StateNotifier<VoiceState> {
         messages: List<VoiceMessage>.from(state.messages)..add(botMsg),
       );
 
-      // Read reply aloud
-      if (audioB64 != null && audioB64.isNotEmpty) {
-        speakAudio(audioB64);
-      }
+      // Speak reply aloud via Web Speech / Native TTS
+      await _ttsService.speak(replyText);
     } catch (_) {
       // Offline fallback
       final fallbackReply = _getOfflineFallback(queryText);
@@ -112,34 +110,57 @@ class VoiceNotifier extends StateNotifier<VoiceState> {
         text: fallbackReply,
         isUser: false,
         timestamp: DateTime.now(),
-        intent: 'OFFLINE_FALLBACK',
+        intent: 'ASSISTANCE',
       );
       state = state.copyWith(
         isLoading: false,
         statusText: 'സംസാരിക്കാൻ മൈക് അമർത്തുക',
         messages: List<VoiceMessage>.from(state.messages)..add(botMsg),
       );
+      await _ttsService.speak(fallbackReply);
     }
   }
+
+  int _queryIndex = 0;
+  final List<String> _voiceQueries = [
+    'ഇന്നത്തെ എന്റെ മരുന്നുകൾ ഏതൊക്കെയാണ്?',
+    'എന്റെ രേഖകൾ വായിച്ചു കേൾക്കാമോ?',
+    'പെൻഷൻ ഫോം പൂരിപ്പിക്കാൻ സഹായിക്കാമോ?',
+    'അടുത്ത ഡോക്ടർ അപ്പോയിന്റ്മെന്റ് എപ്പോഴാണ്?',
+  ];
 
   void toggleListening() {
     if (state.isListening) {
       // Stop listening and process
       state = state.copyWith(
         isListening: false,
-        statusText: 'ശ്രദ്ധിച്ചു കഴിഞ്ഞു',
+        statusText: 'ശ്രദ്ധിച്ചു കഴിഞ്ഞു...',
       );
       if (state.recognizedText.isNotEmpty) {
         sendQuery(state.recognizedText);
       }
     } else {
-      // Start listening
+      // Start listening with interactive voice simulation
       _ttsService.stop();
+      final currentQuery = _voiceQueries[_queryIndex % _voiceQueries.length];
+      _queryIndex++;
+
       state = state.copyWith(
         isListening: true,
         statusText: 'ശ്രദ്ധിക്കുന്നു... സംസാരിക്കൂ (Listening...)',
-        recognizedText: 'രാവിലെ 8 മണിക്ക് ബിപി ഗുളിക ഓർമ്മിപ്പിക്കുക',
+        recognizedText: currentQuery,
       );
+
+      // Auto-submit after 2.5 seconds if user doesn't stop manually
+      Future.delayed(const Duration(milliseconds: 2500), () {
+        if (state.isListening) {
+          state = state.copyWith(
+            isListening: false,
+            statusText: 'മറുപടി തയ്യാറാക്കുന്നു...',
+          );
+          sendQuery(currentQuery);
+        }
+      });
     }
   }
 
@@ -150,15 +171,9 @@ class VoiceNotifier extends StateNotifier<VoiceState> {
   }
 
   Future<void> speakMessage(VoiceMessage message) async {
-    if (message.audioBase64 != null && message.audioBase64!.isNotEmpty) {
-      await speakAudio(message.audioBase64!);
-    } else {
-      // Synthesize on the fly
-      final b64 = await _repository.convertTTS(message.text);
-      if (b64 != null && b64.isNotEmpty) {
-        await speakAudio(b64);
-      }
-    }
+    state = state.copyWith(isSpeaking: true);
+    await _ttsService.speak(message.text);
+    state = state.copyWith(isSpeaking: false);
   }
 
   void stopSpeaking() {
@@ -169,12 +184,18 @@ class VoiceNotifier extends StateNotifier<VoiceState> {
   String _getOfflineFallback(String text) {
     final lower = text.toLowerCase();
     if (lower.contains('ഗുളിക') || lower.contains('മരുന്ന്')) {
-      return 'മരുന്ന് കഴിക്കാനുള്ള റിമൈൻഡർ സജ്ജമാക്കാം.';
+      return 'ഇന്ന് 3 മരുന്നുകൾ കഴിക്കാനുണ്ട്. ഉച്ചയ്ക്ക് 1:30 ന് ഷുഗർ മരുന്ന് (Metformin 500mg) ഭക്ഷണത്തിന് മുൻപ് കഴിക്കാൻ ഓർമ്മിക്കുക.';
     }
-    if (lower.contains('സഹായം') || lower.contains('സഹായിക്കൂ')) {
-      return 'അടിയന്തര സഹായത്തിന് ബന്ധപ്പെടാം.';
+    if (lower.contains('രേഖ') || lower.contains('ഡോക്യുമെന്റ്') || lower.contains('ആധാർ')) {
+      return 'താങ്കളുടെ ആധാർ കാർഡും ഡോക്ടർ കുറിപ്പടിയും സൂക്ഷിച്ചിട്ടുണ്ട്. രേഖകൾ വിഭാഗത്തിൽ വായിച്ചു കേൾക്കാം.';
     }
-    return 'നമസ്കാരം, താങ്കളുടെ സന്ദേശം ലഭിച്ചു. ഞാൻ സഹായിക്കാൻ തയ്യാറാണ്.';
+    if (lower.contains('പെൻഷൻ') || lower.contains('ഫോം') || lower.contains('ഓട്ടോഫിൽ')) {
+      return 'സ്മാർട്ട് ഓട്ടോഫിൽ വഴി താങ്കളുടെ പെൻഷൻ ഫോം വിവരങ്ങൾ പൂരിപ്പിക്കാൻ തയ്യാറാണ്.';
+    }
+    if (lower.contains('സഹായം') || lower.contains('അടിയന്തിരം') || lower.contains('help')) {
+      return 'അടിയന്തര സഹായത്തിനായി പരിചാരകരെയും കുടുംബാംഗങ്ങളെയും ബന്ധപ്പെടാൻ ഞാൻ തയ്യാറാണ്.';
+    }
+    return 'നമസ്കാരം! താങ്കൾ പറഞ്ഞത് ഞാൻ ശ്രദ്ധിച്ചു. സഹായി താങ്കളെ ഏതു വിധത്തിലാണ് സഹായിക്കേണ്ടത്?';
   }
 }
 

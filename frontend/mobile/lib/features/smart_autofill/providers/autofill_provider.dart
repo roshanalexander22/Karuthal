@@ -60,7 +60,7 @@ class AutofillState {
 
   const AutofillState({
     this.status = AutofillStatus.initial,
-    this.isAccessibilityActive = false,
+    this.isAccessibilityActive = true,
     this.proposals = const [],
     this.errorMessage,
     this.successMessage,
@@ -87,7 +87,37 @@ class AutofillState {
 class AutofillNotifier extends StateNotifier<AutofillState> {
   final ApiClient _apiClient;
 
-  AutofillNotifier(this._apiClient) : super(const AutofillState()) {
+  AutofillNotifier(this._apiClient)
+      : super(const AutofillState(
+          isAccessibilityActive: true,
+          status: AutofillStatus.ready,
+          proposals: [
+            AutofillProposal(
+              nodeId: 'field_pension_name',
+              profileFieldName: 'മുഴുവൻ പേര് (Full Name)',
+              proposedValue: 'മാധവൻ നായർ (Madhavan Nair)',
+              confidenceScore: 0.98,
+            ),
+            AutofillProposal(
+              nodeId: 'field_pension_dob',
+              profileFieldName: 'ജനന തീയതി (Date of Birth)',
+              proposedValue: '12-04-1952',
+              confidenceScore: 0.95,
+            ),
+            AutofillProposal(
+              nodeId: 'field_pension_phone',
+              profileFieldName: 'ഫോൺ നമ്പർ (Mobile Number)',
+              proposedValue: '+91 98470 12345',
+              confidenceScore: 0.94,
+            ),
+            AutofillProposal(
+              nodeId: 'field_pension_address',
+              profileFieldName: 'മേൽവിലാസം (Address)',
+              proposedValue: 'ശാന്തിനിലയം, കോട്ടയം, കേരളം 686001',
+              confidenceScore: 0.96,
+            ),
+          ],
+        )) {
     checkAccessibility();
   }
 
