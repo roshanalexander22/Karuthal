@@ -58,8 +58,9 @@ By bridging modern mobile accessibility frameworks, regional Indian language spe
 ## 📊 Feature Implementation Status
 
 > **Last Updated**: November 7, 2026  
-> **Repository Baseline**: Commit `8ccd2a0` (Merged into `develop` & `main`)  
+> **Repository Baseline**: Commit `0611a71` (Merged into `develop` & `main`)  
 > **System Verification**: 14 / 14 Automated Checks Passing (`scripts/verify_all.py`)
+> **Live Interface**: Frontend at `http://localhost:3000` • Backend at `http://localhost:8000` • AI Engine at `http://localhost:8001`
 
 | Feature / Subsystem | Status | Owner | Verification Evidence |
 |---|---|---|---|
@@ -595,12 +596,20 @@ pip install -r requirements.txt
 uvicorn main:app --port 8001 --reload
 ```
 
-#### Flutter Mobile Client
+#### Flutter Mobile & Web Client
 ```bash
 cd frontend/mobile
 flutter pub get
+
+# For Web (runs instantly in browser on port 3000):
+flutter run -d web-server --web-port 3000 --web-hostname 127.0.0.1
+
+# For Android Emulator or Device:
 flutter run
 ```
+
+> **Database Self-Healing & Local Fallback**:  
+> The backend connects to PostgreSQL on `localhost:5432` by default. If PostgreSQL is offline (e.g. developing locally on Windows without Docker), the backend automatically and seamlessly switches to the canonical SQLite dev database (`backend/sahaayi_dev.db`), auto-generates all 12 tables, and seeds initial elderly test accounts (`elder_care@sahaayi.in` / `SecurePassword123!`). No manual setup required!
 
 ---
 
